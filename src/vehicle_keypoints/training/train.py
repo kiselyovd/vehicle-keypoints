@@ -22,7 +22,12 @@ def main(cfg: DictConfig) -> None:
     from lightning.pytorch.loggers import MLFlowLogger
 
     from ..models import build_model
+    import ultralytics
     from ultralytics import YOLO
+
+    # Force Ultralytics to use our configured output dir (its global settings would otherwise win).
+    out_abs = str(Path(cfg.trainer.output_dir).resolve())
+    ultralytics.settings.update({"runs_dir": out_abs})
 
     model = YOLO(cfg.model.name + "-pose.pt")
     model.train(
@@ -30,7 +35,7 @@ def main(cfg: DictConfig) -> None:
         epochs=cfg.trainer.max_epochs,
         imgsz=cfg.data.image_size,
         batch=cfg.data.batch_size,
-        project=cfg.trainer.output_dir,
+        project=out_abs,
         name=cfg.experiment_name,
     )
     log.info("train.done")

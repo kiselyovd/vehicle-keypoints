@@ -78,3 +78,46 @@ def test_prepare_yolo_dataset(tmp_path: Path) -> None:
     n_train_imgs = len(list((out / "images" / "train").glob("*.jpg")))
     n_val_imgs = len(list((out / "images" / "val").glob("*.jpg")))
     assert n_train_imgs + n_val_imgs == 20
+
+
+def test_coco_to_yolo_row_clips_bounds():
+    """Bboxes that extend past image bounds must be clipped to [0, 1]."""
+    from vehicle_keypoints.data.prepare import _coco_to_yolo_row
+
+    # Bbox extends past 1920x1080: x=-50, y=-30, w=2000, h=1200
+    ann = {
+        "bbox": [-50, -30, 2000, 1200],
+        "keypoints": [2000, 1200, 2] * 14,  # all past bounds but vis=2
+    }
+    row = _coco_to_yolo_row(ann, img_w=1920, img_h=1080)
+    parts = row.split()
+    # Class id
+    assert parts[0] == "0"
+    # cx, cy, bw, bh all must be in [0, 1]
+    for p in parts[1:5]:
+        assert 0.0 <= float(p) <= 1.0, f"{p} out of [0,1]"
+    # keypoint coords clipped too
+    for k in range(14):
+        kx, ky, v = parts[5 + k*3], parts[5 + k*3 + 1], parts[5 + k*3 + 2]
+        assert 0.0 <= float(kx) <= 1.0
+        assert 0.0 <= float(ky) <= 1.0
+
+
+def test_coco_to_yolo_row_zeros_invisible_kpts():
+    """vis=0 keypoints must emit (0, 0, 0) regardless of stored coords."""
+    from vehicle_keypoints.data.prepare import _coco_to_yolo_row
+
+    # All keypoints invisible but with bogus coords stored
+    ann = {
+        "bbox": [100, 200, 300, 400],
+        "keypoints": [999, 999, 0] * 14,
+    }
+    row = _coco_to_yolo_row(ann, img_w=1920, img_h=1080)
+    parts = row.split()
+    for k in range(14):
+        kx = parts[5 + k*3]
+        ky = parts[5 + k*3 + 1]
+        v = parts[5 + k*3 + 2]
+        assert kx == "0.000000"
+        assert ky == "0.000000"
+        assert v == "0"

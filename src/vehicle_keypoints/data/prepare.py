@@ -20,17 +20,38 @@ ANN_FILENAMES = {"train": "car_keypoints_train.json", "test": "car_keypoints_tes
 
 def _coco_to_yolo_row(ann: dict[str, Any], img_w: int, img_h: int) -> str:
     x, y, w, h = ann["bbox"]
-    cx = (x + w / 2) / img_w
-    cy = (y + h / 2) / img_h
-    bw = w / img_w
-    bh = h / img_h
+    # Clip bbox to image bounds, then renormalize.
+    x0 = max(0.0, float(x))
+    y0 = max(0.0, float(y))
+    x1 = min(float(img_w), float(x) + float(w))
+    y1 = min(float(img_h), float(y) + float(h))
+    bw_px = max(0.0, x1 - x0)
+    bh_px = max(0.0, y1 - y0)
+    cx = (x0 + bw_px / 2) / img_w
+    cy = (y0 + bh_px / 2) / img_h
+    bw = bw_px / img_w
+    bh = bh_px / img_h
+    # Clamp normalized values to [0, 1] for numerical safety (tiny float drift).
+    cx = min(max(cx, 0.0), 1.0)
+    cy = min(max(cy, 0.0), 1.0)
+    bw = min(max(bw, 0.0), 1.0)
+    bh = min(max(bh, 0.0), 1.0)
     parts: list[str] = ["0", f"{cx:.6f}", f"{cy:.6f}", f"{bw:.6f}", f"{bh:.6f}"]
     kpts = ann["keypoints"]
     for k in range(NUM_KEYPOINTS):
         kx, ky, v = kpts[k * 3 : k * 3 + 3]
-        parts.append(f"{kx / img_w:.6f}")
-        parts.append(f"{ky / img_h:.6f}")
-        parts.append(str(int(v)))
+        v_int = int(v)
+        if v_int <= 0:
+            # Non-labeled kpt: emit (0, 0, 0) — YOLO convention.
+            parts.append("0.000000")
+            parts.append("0.000000")
+            parts.append("0")
+        else:
+            kx_n = min(max(float(kx) / img_w, 0.0), 1.0)
+            ky_n = min(max(float(ky) / img_h, 0.0), 1.0)
+            parts.append(f"{kx_n:.6f}")
+            parts.append(f"{ky_n:.6f}")
+            parts.append(str(v_int))
     return " ".join(parts)
 
 
