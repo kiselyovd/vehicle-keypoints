@@ -75,7 +75,7 @@ def _pck(
     }
 
 
-def _run_oks_eval (coco_gt_path: Path, preds_json: Path) -> dict[str, float]:
+def _oks_summary(coco_gt_path: Path, preds_json: Path) -> dict[str, float]:
     gt = CocoGt(str(coco_gt_path))
     dt = gt.loadRes(str(preds_json))
     runner = CocoEvaluator(gt, dt, iouType="keypoints")
@@ -146,7 +146,7 @@ def main() -> None:
 
     metrics: dict[str, Any] = {}
     if results:
-        metrics.update(_run_oks_eval (Path(args.gt), tmp_preds))
+        metrics.update(_oks_summary(Path(args.gt), tmp_preds))
     metrics.update(_pck(results, gt))
     metrics["test_size"] = len(gt["images"])
     metrics["n_predictions"] = len(results)
