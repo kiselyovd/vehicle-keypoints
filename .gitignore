@@ -21,3 +21,5 @@ data/processed/*
 !data/processed/.gitkeep
 .env
 .env.local
+*.pt
+site/
