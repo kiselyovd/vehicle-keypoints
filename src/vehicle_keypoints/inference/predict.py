@@ -35,7 +35,7 @@ class Detector:
         for candidate in (f"{base_name}-pose.pt", "yolo11n-pose.pt", f"{base_name}-pose.yaml"):
             try:
                 return cls(model=YOLO(candidate))
-            except Exception:
+            except Exception:  # nosec B112 - intentional fallback over candidate list
                 continue
         raise RuntimeError(f"Could not instantiate YOLO for {base_name}")
 

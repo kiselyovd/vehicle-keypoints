@@ -147,7 +147,10 @@ known_first_party = ["vehicle_keypoints"]
 ignore = ["DEP004"]
 
 [tool.deptry.per_rule_ignores]
-DEP002 = ["nbstripout", "ipykernel", "pyyaml", "rich"]
+# torchvision + torchmetrics are used transitively by ultralytics / lightning
+# callbacks; keep declared so the env is reproducible without pulling them in
+# transitively at runtime only.
+DEP002 = ["nbstripout", "ipykernel", "pyyaml", "rich", "torchvision", "torchmetrics"]
 
 [tool.codespell]
 skip = "uv.lock,*.ipynb,*.lock,data/*"
