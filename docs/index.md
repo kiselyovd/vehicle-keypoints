@@ -1,5 +1,7 @@
 # vehicle-keypoints
 
+![vehicle-keypoints · YOLO26-pose 14-kpt car detector](images/hero.png)
+
 Production-grade 14-keypoint vehicle pose estimation on the CarFusion (CMU) dataset — wheels, headlights, taillights, bumpers, side-mirrors, and license plates per car.
 
 ![CarFusion 14-keypoint skeleton · YOLO26-pose kpt_shape=[14, 3]](images/keypoints_skeleton.svg)
