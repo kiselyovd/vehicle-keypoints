@@ -2,6 +2,8 @@
 
 Production-grade 14-keypoint vehicle pose estimation on the CarFusion (CMU) dataset — wheels, headlights, taillights, bumpers, side-mirrors, and license plates per car.
 
+![CarFusion 14-keypoint skeleton · YOLO26-pose kpt_shape=[14, 3]](images/keypoints_skeleton.svg)
+
 ## Task
 
 Per-vehicle 2D landmark localisation on RGB images. 14 anatomical keypoints per car instance: 4 wheels (front/rear × left/right), 4 lights (front/rear × left/right), 2 bumpers (front/rear), 2 side-mirrors (left/right), 2 license plates (front/rear). Each keypoint carries an `(x, y, v)` triplet where `v ∈ {0, 1, 2}` (absent / occluded / visible) following the COCO convention.
