@@ -11,8 +11,8 @@ pipeline_tag: {{ pipeline_tag }}
 {% for ds in datasets %}  - {{ ds }}
 {% endfor %}
 metrics:
-  - accuracy
-  - f1
+  - oks
+  - pck
 
 {% if widget_examples %}widget:
 {% for ex in widget_examples %}  - src: {{ ex.src }}
@@ -30,40 +30,45 @@ model-index:
         metrics:
 {% for m in task_result.metrics %}          - type: {{ m.type }}
             value: {{ m.value }}
-{% endfor %}{% endfor %}
----
+{% endfor %}{% endfor %}---
 
 # vehicle-keypoints
 
-{{ model_description }}
+14-keypoint vehicle pose estimation on the CarFusion (CMU) dataset — wheels, headlights, taillights, bumpers, side-mirrors, and license plates per car. Main weights (`weights.pt`) are an Ultralytics YOLO26-pose checkpoint; a ViTPose-S top-down baseline is published under the `baseline/` subdirectory of this repo.
 
-## Metrics
+## Metrics (test set, n=12761)
 
 {{ metrics_table }}
 
 ## Usage
 
-
 ```python
-from huggingface_hub import snapshot_download
+from huggingface_hub import hf_hub_download
+from ultralytics import YOLO
 
-local_dir = snapshot_download("{{ repo_id }}")
-print(f"Model downloaded to: {local_dir}")
+ckpt = hf_hub_download(repo_id="{{ repo_id }}", filename="weights.pt")
+model = YOLO(ckpt)
+results = model.predict("car.jpg")
+for r in results:
+    for box, kpts, score in zip(r.boxes.xywh, r.keypoints.data, r.boxes.conf):
+        print(box.tolist(), score.item(), len(kpts))
 ```
 
+The baseline weights (ViTPose-S, HF `safetensors` format + processor config) live under the `baseline/` subdir of this repo and are loaded via `transformers` — see the [GitHub README]({{ github_url }}#baseline) for the inference snippet.
 
-## Training Data
+## Source
 
-{% if hf_dataset %}Trained on [{{ dataset_name or hf_dataset }}](https://huggingface.co/datasets/{{ hf_dataset }}).
-{% else %}Training dataset details not specified.
-{% endif %}
+- **Code:** [{{ github_url }}]({{ github_url }})
+- **Dataset:** [CarFusion](http://www.cs.cmu.edu/~ILIM/projects/IM/CarFusion/cvpr2018/index.html) — N. Dinesh Reddy, Minh Vo, Srinivasa Narasimhan, *"CarFusion: Combining Point Tracking and Part Detection for Dynamic 3D Reconstruction of Vehicles"*, CVPR 2018. © Carnegie Mellon University.
+- **Keypoint order (14):** `wheel_fl, wheel_fr, wheel_rl, wheel_rr, light_fl, light_fr, light_rl, light_rr, bumper_f, bumper_r, mirror_l, mirror_r, plate_f, plate_r`.
 
-## Source Code
+## Intended use
 
-[GitHub Repository]({{ github_url }})
+Research and educational artifact demonstrating modern keypoint-detection pipelines on a non-human class. Not intended for any safety-critical, autonomous-driving, or surveillance deployment — the model is trained on a single academic dataset and has not been validated for production use.
 
-## Intended Use
+## License
 
-This model is provided for research and educational purposes. The authors make no warranties about its suitability for any particular application. Users are responsible for evaluating the model's fitness for their use case, including fairness, safety, and compliance with applicable regulations.
+- **Code + weights:** MIT (see [`LICENSE`]({{ github_url }}/blob/main/LICENSE)).
+- **Dataset:** CarFusion © Carnegie Mellon University — redistributed under the dataset's original terms; cite Reddy et al. 2018 if you use the weights for research.
 
 > **Note:** This model card was generated from the [ml-project-template](https://github.com/kiselyovd/ml-project-template) scaffold.
