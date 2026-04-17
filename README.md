@@ -9,7 +9,7 @@ Production-grade 14-keypoint vehicle pose estimation on CarFusion — YOLO26-pos
 [![Python 3.12+](https://img.shields.io/badge/Python-3.12%20%7C%203.13-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![HF Model](https://img.shields.io/badge/🤗%20HF%20Hub-model-FFD21E?style=for-the-badge)](https://huggingface.co/kiselyovd/vehicle-keypoints)
 
-End-to-end toolkit for detecting vehicles and regressing **14 anatomical keypoints per car** (wheels, lights, mirrors, roof corners) on the CarFusion (CMU) dataset. The main model is a single-stage **YOLO26-pose** detector (Ultralytics); the baseline is a top-down **ViTPose-S** wrapped in PyTorch Lightning and fed by a YOLO car detector. The stack is Hydra-configured, trained from the CLI, evaluated with OKS-mAP + PCK@0.05, served over FastAPI + Docker, documented with MkDocs Material, and distributed through the Hugging Face Hub. Research and education only — **not a primary sensor for autonomous driving**.
+End-to-end toolkit for detecting vehicles and regressing **14 anatomical keypoints per car** (wheels, head- and tail-lights, roof corners, exhaust, body centre) on the CarFusion (CMU) dataset. The main model is a single-stage **YOLO26-pose** detector (Ultralytics); the baseline is a top-down **ViTPose-S** wrapped in PyTorch Lightning and fed by a YOLO car detector. The stack is Hydra-configured, trained from the CLI, evaluated with OKS-mAP + PCK@0.05, served over FastAPI + Docker, documented with MkDocs Material, and distributed through the Hugging Face Hub. Research and education only — **not a primary sensor for autonomous driving**.
 
 ![vehicle-keypoints hero](docs/images/hero.png)
 

@@ -34,7 +34,7 @@ model-index:
 
 # vehicle-keypoints
 
-14-keypoint vehicle pose estimation on the CarFusion (CMU) dataset — wheels, headlights, taillights, bumpers, side-mirrors, and license plates per car. Main weights (`weights.pt`) are an Ultralytics YOLO26-pose checkpoint; a ViTPose-S top-down baseline is published under the `baseline/` subdirectory of this repo.
+14-keypoint vehicle pose estimation on the CarFusion (CMU) dataset — four wheels, four head- and tail-lights, four roof corners, the exhaust, and a body-centre reference point per car (canonical CarFusion schema, Reddy et al., CVPR 2018). Main weights (`weights.pt`) are an Ultralytics YOLO26-pose checkpoint; a ViTPose-S top-down baseline is published under the `baseline/` subdirectory of this repo.
 
 ## Metrics (test set, n=12761)
 
@@ -60,7 +60,7 @@ The baseline weights (ViTPose-S, HF `safetensors` format + processor config) liv
 
 - **Code:** [{{ github_url }}]({{ github_url }})
 - **Dataset:** [CarFusion](http://www.cs.cmu.edu/~ILIM/projects/IM/CarFusion/cvpr2018/index.html) — N. Dinesh Reddy, Minh Vo, Srinivasa Narasimhan, *"CarFusion: Combining Point Tracking and Part Detection for Dynamic 3D Reconstruction of Vehicles"*, CVPR 2018. © Carnegie Mellon University.
-- **Keypoint order (14):** `wheel_fl, wheel_fr, wheel_rl, wheel_rr, light_fl, light_fr, light_rl, light_rr, bumper_f, bumper_r, mirror_l, mirror_r, plate_f, plate_r`.
+- **Keypoint order (14):** `right_front_wheel, left_front_wheel, right_back_wheel, left_back_wheel, right_front_headlight, left_front_headlight, right_back_headlight, left_back_headlight, exhaust, right_front_top, left_front_top, right_back_top, left_back_top, center` — naming follows the original CarFusion / Occlusion-Net reference (`dineshreddy91/Occlusion_Net/lib/data_loader/datasets/keypoint.py`).
 
 ## Intended use
 

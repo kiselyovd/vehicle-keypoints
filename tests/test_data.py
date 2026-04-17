@@ -7,12 +7,18 @@ import json
 from pathlib import Path
 
 from vehicle_keypoints.data.prepare import prepare_yolo_dataset
+from vehicle_keypoints.inference.overlay import CARFUSION_KEYPOINT_NAMES
 
 
 def _minimal_coco(n_images: int, scene: str) -> dict:
     return {
         "categories": [
-            {"id": 1, "name": "car", "keypoints": [str(i) for i in range(14)], "skeleton": []}
+            {
+                "id": 1,
+                "name": "car",
+                "keypoints": list(CARFUSION_KEYPOINT_NAMES),
+                "skeleton": [],
+            }
         ],
         "images": [
             {

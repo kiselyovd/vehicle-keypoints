@@ -29,6 +29,7 @@ from typing import Any
 import numpy as np
 from shapely.geometry import Polygon
 
+from ..inference.overlay import CARFUSION_KEYPOINT_NAMES
 from ..utils import get_logger
 
 log = get_logger(__name__)
@@ -142,7 +143,7 @@ def convert_scene_dir(
                 "id": 1,
                 "skeleton": _CARFUSION_SKELETON,
                 "supercategory": "car",
-                "keypoints": [str(k) for k in range(NUM_KEYPOINTS)],
+                "keypoints": list(CARFUSION_KEYPOINT_NAMES),
             }
         ],
         "images": [],

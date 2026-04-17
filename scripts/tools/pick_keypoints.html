@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CarFusion keypoints picker</title>
+<style>
+  :root {
+    color-scheme: light;
+    font-family: "Inter", "Segoe UI", sans-serif;
+  }
+  body { margin: 0; background: #f7f8fa; color: #1d2a3a; }
+  header { padding: 12px 20px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #d1d5db; }
+  header h1 { margin: 0; font-size: 18px; }
+  header .hint { font-size: 13px; color: #475569; }
+  main { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 16px; padding: 16px; }
+  .stage { position: relative; overflow: auto; border: 1px solid #d1d5db; background: white; }
+  .stage img { display: block; max-width: none; }
+  .stage canvas { position: absolute; left: 0; top: 0; cursor: crosshair; }
+  aside { background: white; border: 1px solid #d1d5db; padding: 14px 16px; border-radius: 6px; font-size: 13px; }
+  aside h2 { margin: 0 0 8px; font-size: 15px; }
+  aside .current { background: #e0f4f9; border: 1px solid #1bb6d1; border-radius: 4px; padding: 8px 10px; margin-bottom: 10px; }
+  aside .current strong { color: #0e5a6e; }
+  aside ol { margin: 0; padding-left: 22px; line-height: 1.7; }
+  aside ol li.done { color: #64748b; }
+  aside ol li.current { font-weight: 600; color: #0e5a6e; }
+  aside button { font: inherit; padding: 6px 12px; margin-right: 6px; border: 1px solid #1d2a3a; background: white; border-radius: 4px; cursor: pointer; }
+  aside button:hover { background: #f1f5f9; }
+  aside textarea { width: 100%; height: 220px; font-family: "Consolas", monospace; font-size: 12px; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; resize: vertical; }
+  aside .tips { margin-top: 12px; color: #475569; font-size: 12px; line-height: 1.5; }
+  kbd { background: #e2e8f0; border: 1px solid #94a3b8; border-radius: 3px; padding: 1px 5px; font-family: "Consolas", monospace; font-size: 11px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>CarFusion keypoints picker</h1>
+  <span class="hint">Click on the car to place the next keypoint. <kbd>Z</kbd> undo, <kbd>R</kbd> reset.</span>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <img id="car" src="../../docs/images/keypoints_skeleton_base.png" alt="car">
+    <canvas id="canvas"></canvas>
+  </div>
+  <aside>
+    <div class="current" id="current-box">
+      Click to place: <strong id="current-label">0 &mdash; Right Front wheel</strong>
+    </div>
+    <ol id="progress"></ol>
+    <div style="margin: 10px 0;">
+      <button id="undo">Undo (Z)</button>
+      <button id="reset">Reset (R)</button>
+      <button id="copy">Copy dict</button>
+    </div>
+    <textarea id="output" readonly placeholder="POS dict will appear here after all 14 clicks."></textarea>
+    <div class="tips">
+      Points are placed in order 0&rarr;13. For each one, click the anatomical
+      location on the car (even if it&rsquo;s occluded by the near side &mdash;
+      estimate where it would be). Zoom your browser with
+      <kbd>Ctrl</kbd>+<kbd>+</kbd> for more precision; coordinates are reported
+      in native pixels regardless of zoom.
+    </div>
+  </aside>
+</main>
+<script>
+(function () {
+  const NAMES = [
+    "Right Front wheel",
+    "Left Front wheel",
+    "Right Back wheel",
+    "Left Back wheel",
+    "Right Front HeadLight",
+    "Left Front HeadLight",
+    "Right Back HeadLight",
+    "Left Back HeadLight",
+    "Exhaust",
+    "Right Front Top",
+    "Left Front Top",
+    "Right Back Top",
+    "Left Back Top",
+    "Center",
+  ];
+  const NEAR = new Set([0, 2, 4, 6, 8, 9, 11, 13]);
+
+  const img = document.getElementById("car");
+  const canvas = document.getElementById("canvas");
+  const progress = document.getElementById("progress");
+  const currentLabel = document.getElementById("current-label");
+  const output = document.getElementById("output");
+  const points = [];
+
+  function sizeCanvas() {
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    canvas.style.width = img.clientWidth + "px";
+    canvas.style.height = img.clientHeight + "px";
+  }
+
+  function redraw() {
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.lineWidth = 2;
+    for (let i = 0; i < points.length; i++) {
+      const [x, y] = points[i];
+      const near = NEAR.has(i);
+      ctx.beginPath();
+      ctx.arc(x, y, 22, 0, Math.PI * 2);
+      ctx.fillStyle = i === 13 ? "rgba(255,255,255,0.95)" : near ? "#1bb6d1" : "rgba(27,182,209,0.45)";
+      ctx.fill();
+      ctx.strokeStyle = "#1d2a3a";
+      ctx.setLineDash(near ? [] : [5, 4]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = i === 13 ? "#1d2a3a" : "white";
+      ctx.font = "bold 20px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(String(i), x, y + 1);
+    }
+  }
+
+  function refreshSidebar() {
+    while (progress.firstChild) progress.removeChild(progress.firstChild);
+    for (let i = 0; i < NAMES.length; i++) {
+      const li = document.createElement("li");
+      const suffix = points[i] ? ` \u2014 (${points[i][0]}, ${points[i][1]})` : "";
+      li.textContent = `${i}. ${NAMES[i]}${suffix}`;
+      if (points[i]) li.classList.add("done");
+      else if (i === points.length) li.classList.add("current");
+      progress.appendChild(li);
+    }
+    if (points.length < NAMES.length) {
+      currentLabel.textContent = `${points.length} \u2014 ${NAMES[points.length]}`;
+      output.value = "";
+    } else {
+      currentLabel.textContent = "All 14 placed.";
+      output.value = asPythonDict();
+    }
+  }
+
+  function asPythonDict() {
+    const lines = ["POS: dict[int, tuple[int, int]] = {"];
+    const pad = (s, n) => s.length >= n ? s : s + " ".repeat(n - s.length);
+    for (let i = 0; i < points.length; i++) {
+      const [x, y] = points[i];
+      const key = pad(`${i}:`, 4);
+      const val = `(${x}, ${y}),`;
+      lines.push(`    ${key} ${pad(val, 14)} # ${NAMES[i]}`);
+    }
+    lines.push("}");
+    return lines.join("\n");
+  }
+
+  canvas.addEventListener("click", (ev) => {
+    if (points.length >= NAMES.length) return;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = Math.round((ev.clientX - rect.left) * scaleX);
+    const y = Math.round((ev.clientY - rect.top) * scaleY);
+    points.push([x, y]);
+    redraw();
+    refreshSidebar();
+  });
+
+  document.addEventListener("keydown", (ev) => {
+    if (ev.target && (ev.target.tagName === "TEXTAREA" || ev.target.tagName === "INPUT")) return;
+    if (ev.key === "z" || ev.key === "Z") { points.pop(); redraw(); refreshSidebar(); }
+    else if (ev.key === "r" || ev.key === "R") { points.length = 0; redraw(); refreshSidebar(); }
+  });
+
+  document.getElementById("undo").addEventListener("click", () => { points.pop(); redraw(); refreshSidebar(); });
+  document.getElementById("reset").addEventListener("click", () => { points.length = 0; redraw(); refreshSidebar(); });
+  document.getElementById("copy").addEventListener("click", async () => {
+    if (!output.value) return;
+    try { await navigator.clipboard.writeText(output.value); }
+    catch { output.select(); document.execCommand("copy"); }
+  });
+
+  if (img.complete) sizeCanvas();
+  else img.addEventListener("load", sizeCanvas);
+  window.addEventListener("resize", sizeCanvas);
+  refreshSidebar();
+})();
+</script>
+</body>
+</html>

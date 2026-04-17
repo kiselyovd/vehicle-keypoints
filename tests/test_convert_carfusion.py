@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from vehicle_keypoints.inference.overlay import CARFUSION_KEYPOINT_NAMES
 from vehicle_keypoints.scripts_lib.convert_carfusion import convert_scene_dir
 
 
@@ -27,7 +28,7 @@ def test_convert_scene_dir_smoke(tmp_path: Path) -> None:
     convert_scene_dir(raw_dir=raw, image_subdir="images", out_json=out)
 
     data = json.loads(out.read_text(encoding="utf-8"))
-    assert data["categories"][0]["keypoints"] == [str(i) for i in range(14)]
+    assert data["categories"][0]["keypoints"] == list(CARFUSION_KEYPOINT_NAMES)
     assert len(data["images"]) == 1
     assert len(data["annotations"]) == 1
     ann = data["annotations"][0]

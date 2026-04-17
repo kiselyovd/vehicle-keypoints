@@ -7,6 +7,23 @@ from pathlib import Path
 
 import cv2
 
+CARFUSION_KEYPOINT_NAMES: tuple[str, ...] = (
+    "right_front_wheel",
+    "left_front_wheel",
+    "right_back_wheel",
+    "left_back_wheel",
+    "right_front_headlight",
+    "left_front_headlight",
+    "right_back_headlight",
+    "left_back_headlight",
+    "exhaust",
+    "right_front_top",
+    "left_front_top",
+    "right_back_top",
+    "left_back_top",
+    "center",
+)
+
 CARFUSION_SKELETON: tuple[tuple[int, int], ...] = (
     (0, 2),
     (1, 3),

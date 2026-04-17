@@ -55,7 +55,7 @@ Default (or when `Accept: application/json`):
 ```
 
 - `bbox` is xywh in the original image frame.
-- `keypoints` is always a list of **14 entries** in the canonical order (wheels, lights, bumpers, mirrors, plates) — missing keypoints carry `v=0` and meaningless `x`/`y`.
+- `keypoints` is always a list of **14 entries** in the canonical CarFusion order (wheels, head-/tail-lights, exhaust, roof corners, body centre — see `CARFUSION_KEYPOINT_NAMES` in `vehicle_keypoints.inference.overlay`). Missing keypoints carry `v=0` and meaningless `x`/`y`.
 - `score` is the per-instance detection confidence.
 
 ## Example curl
