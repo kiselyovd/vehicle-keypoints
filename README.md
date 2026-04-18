@@ -25,14 +25,14 @@ Resulting image counts: **16,713 train / 3,474 val / 12,761 test**. CarFusion is
 
 ## Results
 
-Test-set metrics after full training (filled in from `reports/metrics.json` once the v0.1.0 run completes):
+Test-set metrics on CarFusion test split (12 761 images, 39 252 predictions):
 
 | Model | OKS-mAP | OKS-mAP50 | PCK@0.05 |
 |---|---|---|---|
-| **YOLO26-pose** (main) | — | — | — |
-| ViTPose-S (baseline) | — | — | — |
+| **YOLO26-pose** (main) | **22.0%** | **35.0%** | **49.6%** |
+| ViTPose-S (baseline) | 0.1% | 0.4% | 13.7% |
 
-Metrics computed with pycocotools + custom PCK@0.05 on the CarFusion test split (12,761 images). Filled after v0.1.0 training run.
+OKS computed via pycocotools with uniform `kpt_oks_sigmas=0.05` (CarFusion has no established anatomical sigma calibration for 14 non-human keypoints); PCK@0.05 with a bbox-diagonal threshold. ViTPose-S baseline is **honestly under-trained** (15 epochs, `val=train` in `scripts/finalize_v010.py`, 85M params typically need 100+ epochs) — kept as a reference point but not representative of ViTPose capacity. See `reports/metrics_summary.json` for the full numbers.
 
 ## Quick Start
 
