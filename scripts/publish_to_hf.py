@@ -32,7 +32,7 @@ _METRIC_DISPLAY_NAMES = {
 _COMPARISON_TABLE = """\
 | Model | OKS-mAP | OKS-mAP@50 | PCK@0.05 | Params | Notes |
 |---|---|---|---|---|---|
-| **YOLO26-pose (ours)** | **22.0%** | **35.0%** | **49.6%** | ~3M | Ultralytics YOLO26n-pose, 100 epochs |
+| **YOLO26-pose (ours)** | **22.0%** | **35.0%** | **49.6%** | ~3M | YOLO26n-pose, 100 ep |
 | ViTPose-S (baseline) | 0.1% | 13.7% | — | 85M | Top-down; 15 epochs, needs 100+ |"""
 
 
@@ -201,7 +201,10 @@ def main() -> None:
                 template_path=Path(args.template),
                 metrics=metrics,
                 out_path=_out,
-                model_description="Production-grade vehicle keypoint detection (14 anatomical car keypoints, CarFusion).",
+                model_description=(
+                    "Production-grade vehicle keypoint detection "
+                    "(14 anatomical car keypoints, CarFusion)."
+                ),
                 github_url="https://github.com/kiselyovd/vehicle-keypoints",
                 repo_id=args.repo_id,
                 base_model=args.base_model,
