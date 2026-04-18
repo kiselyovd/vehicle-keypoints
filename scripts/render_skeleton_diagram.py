@@ -48,20 +48,20 @@ FAR_SIDE = {0, 2, 4, 6, 9, 11}
 # Keypoint pixel positions on the 1696x624 background (picked manually
 # in scripts/tools/pick_keypoints.html).
 POS: dict[int, tuple[int, int]] = {
-    0:  (362, 464),    # Right Front wheel
-    1:  (744, 457),    # Left Front wheel
-    2:  (1020, 453),   # Right Back wheel
-    3:  (1373, 439),   # Left Back wheel
-    4:  (237, 300),    # Right Front HeadLight
-    5:  (559, 309),    # Left Front HeadLight
-    6:  (1290, 215),   # Right Back HeadLight
-    7:  (1480, 224),   # Left Back HeadLight
-    8:  (1454, 458),   # Exhaust
-    9:  (701, 67),     # Right Front Top
-    10: (956, 73),     # Left Front Top
-    11: (1064, 40),    # Right Back Top
-    12: (1200, 64),    # Left Back Top
-    13: (940, 294),    # Center
+    0: (362, 464),  # Right Front wheel
+    1: (744, 457),  # Left Front wheel
+    2: (1020, 453),  # Right Back wheel
+    3: (1373, 439),  # Left Back wheel
+    4: (237, 300),  # Right Front HeadLight
+    5: (559, 309),  # Left Front HeadLight
+    6: (1290, 215),  # Right Back HeadLight
+    7: (1480, 224),  # Left Back HeadLight
+    8: (1454, 458),  # Exhaust
+    9: (701, 67),  # Right Front Top
+    10: (956, 73),  # Left Front Top
+    11: (1064, 40),  # Right Back Top
+    12: (1200, 64),  # Left Back Top
+    13: (940, 294),  # Center
 }
 
 TITLE = "CarFusion \u2014 14 anatomical keypoints + 18 skeleton edges"
@@ -83,21 +83,24 @@ def render() -> None:
     canvas_h = h_img + title_h
 
     fig = plt.figure(
-        figsize=(canvas_w / DPI, canvas_h / DPI), dpi=DPI, facecolor=BG,
+        figsize=(canvas_w / DPI, canvas_h / DPI),
+        dpi=DPI,
+        facecolor=BG,
     )
 
-    ax_img = fig.add_axes(
-        [0.0, 0.0, w_img / canvas_w, h_img / canvas_h]
-    )
+    ax_img = fig.add_axes([0.0, 0.0, w_img / canvas_w, h_img / canvas_h])
     ax_img.imshow(img, extent=(0, w_img, h_img, 0))
     ax_img.set_xlim(0, w_img)
     ax_img.set_ylim(h_img, 0)
     ax_img.axis("off")
 
     fig.text(
-        0.018, 1 - 0.38 * title_h / canvas_h,
+        0.018,
+        1 - 0.38 * title_h / canvas_h,
         TITLE,
-        fontsize=22, color=OUTLINE, weight="bold",
+        fontsize=22,
+        color=OUTLINE,
+        weight="bold",
         family="DejaVu Sans",
     )
 
@@ -107,9 +110,13 @@ def render() -> None:
         both_near = (a in NEAR_SIDE) and (b in NEAR_SIDE)
         alpha = 1.0 if both_near else 0.55
         ax_img.plot(
-            [xa, xb], [ya, yb],
-            color=EDGE_COLOR, linewidth=3, alpha=alpha,
-            solid_capstyle="round", zorder=2,
+            [xa, xb],
+            [ya, yb],
+            color=EDGE_COLOR,
+            linewidth=3,
+            alpha=alpha,
+            solid_capstyle="round",
+            zorder=2,
         )
 
     for idx in range(14):
@@ -118,50 +125,72 @@ def render() -> None:
         alpha = 1.0 if near else OCCLUDED_ALPHA
         hollow = idx == 13
         linestyle = "--" if not near else "-"
-        marker_size = 26 ** 2
+        marker_size = 26**2
         if hollow:
             ax_img.scatter(
-                [x], [y],
-                s=marker_size, facecolors="white", edgecolors=OUTLINE,
-                linewidths=2, alpha=alpha, zorder=3,
+                [x],
+                [y],
+                s=marker_size,
+                facecolors="white",
+                edgecolors=OUTLINE,
+                linewidths=2,
+                alpha=alpha,
+                zorder=3,
                 linestyle=linestyle,
             )
         else:
             ax_img.scatter(
-                [x], [y],
-                s=marker_size, facecolors=KPT_FILL, edgecolors=OUTLINE,
-                linewidths=2, alpha=alpha, zorder=3,
+                [x],
+                [y],
+                s=marker_size,
+                facecolors=KPT_FILL,
+                edgecolors=OUTLINE,
+                linewidths=2,
+                alpha=alpha,
+                zorder=3,
                 linestyle=linestyle,
             )
         ax_img.text(
-            x, y, str(idx),
-            ha="center", va="center",
+            x,
+            y,
+            str(idx),
+            ha="center",
+            va="center",
             color=OUTLINE if hollow else "white",
-            fontsize=11, weight="bold",
-            alpha=alpha, zorder=4,
+            fontsize=11,
+            weight="bold",
+            alpha=alpha,
+            zorder=4,
         )
 
-    ax_leg = fig.add_axes(
-        [w_img / canvas_w, 0.0, legend_w / canvas_w, h_img / canvas_h]
-    )
+    ax_leg = fig.add_axes([w_img / canvas_w, 0.0, legend_w / canvas_w, h_img / canvas_h])
     ax_leg.set_xlim(0, 1)
     ax_leg.set_ylim(0, 1)
     ax_leg.axis("off")
 
     card = FancyBboxPatch(
-        (0.04, 0.05), 0.92, 0.9,
+        (0.04, 0.05),
+        0.92,
+        0.9,
         boxstyle="round,pad=0.005,rounding_size=0.02",
-        linewidth=1.2, edgecolor=OUTLINE, facecolor="white",
+        linewidth=1.2,
+        edgecolor=OUTLINE,
+        facecolor="white",
         transform=ax_leg.transAxes,
     )
     ax_leg.add_patch(card)
 
     ax_leg.text(
-        0.5, 0.02,
+        0.5,
+        0.02,
         "Dashed outline = occluded (far) side of the car",
         transform=ax_leg.transAxes,
-        ha="center", va="bottom",
-        fontsize=9, color=OUTLINE, style="italic", alpha=0.75,
+        ha="center",
+        va="bottom",
+        fontsize=9,
+        color=OUTLINE,
+        style="italic",
+        alpha=0.75,
     )
 
     row_h = 0.85 / 14
@@ -171,22 +200,33 @@ def render() -> None:
         hollow = i == 13
         if hollow:
             ax_leg.scatter(
-                [0.12], [y],
-                s=16 ** 2, facecolors="none", edgecolors=OUTLINE,
-                linewidths=1.5, transform=ax_leg.transAxes,
+                [0.12],
+                [y],
+                s=16**2,
+                facecolors="none",
+                edgecolors=OUTLINE,
+                linewidths=1.5,
+                transform=ax_leg.transAxes,
             )
         else:
             ax_leg.scatter(
-                [0.12], [y],
-                s=16 ** 2, facecolors=KPT_FILL, edgecolors=OUTLINE,
-                linewidths=1.5, transform=ax_leg.transAxes,
+                [0.12],
+                [y],
+                s=16**2,
+                facecolors=KPT_FILL,
+                edgecolors=OUTLINE,
+                linewidths=1.5,
+                transform=ax_leg.transAxes,
             )
         ax_leg.text(
-            0.18, y,
+            0.18,
+            y,
             f"{i:>2}. {name}",
             transform=ax_leg.transAxes,
-            ha="left", va="center",
-            fontsize=11, color=OUTLINE,
+            ha="left",
+            va="center",
+            fontsize=11,
+            color=OUTLINE,
             family="DejaVu Sans",
         )
 
