@@ -6,25 +6,32 @@ Two independent branches that share the same CarFusion COCO export but diverge a
 
 ```mermaid
 flowchart LR
-  Src[CarFusion COCO<br/>D:/ProjectsData/Car Key Point] --> Sync[scripts/sync_data.sh]
-  Sync --> Raw["data/raw/{annotations,train,test}<br/>gitignored"]
-  Raw --> Prep[data/prepare.py<br/>scene-level 90/10 split]
-  Prep --> Proc["data/processed/{images,labels}<br/>YOLO layout + data.yaml"]
+  Src[CarFusion COCO<br/>D:/ProjectsData/Car Key Point]:::external --> Sync[scripts/sync_data.sh]:::code
+  Sync --> Raw["data/raw/{annotations,train,test}<br/>gitignored"]:::data
+  Raw --> Prep[data/prepare.py<br/>scene-level 90/10 split]:::code
+  Prep --> Proc["data/processed/{images,labels}<br/>YOLO layout + data.yaml"]:::data
 
-  Proc --> YOLOTrain[training/train.py<br/>Ultralytics YOLO26-pose]
-  YOLOTrain --> MainArt["artifacts/&lt;run&gt;/weights/best.pt"]
-  MainArt --> Publish[scripts/publish_to_hf.py]
-  Publish --> HF[HF Hub<br/>kiselyovd/vehicle-keypoints]
+  Proc --> YOLOTrain[training/train.py<br/>Ultralytics YOLO26-pose]:::model
+  YOLOTrain --> MainArt["artifacts/&lt;run&gt;/weights/best.pt"]:::artifact
+  MainArt --> Publish[scripts/publish_to_hf.py]:::code
+  Publish --> HF[HF Hub<br/>kiselyovd/vehicle-keypoints]:::external
 
-  Raw --> COCODS[CocoKeypointsDataset<br/>top-down crops + Gaussian heatmaps]
-  COCODS --> ViTTrain[training/train_vitpose.py<br/>Lightning + Hydra + MLflow]
-  ViTTrain --> BaseArt[artifacts/baseline/checkpoints/best.ckpt]
+  Raw --> COCODS[CocoKeypointsDataset<br/>top-down crops + Gaussian heatmaps]:::code
+  COCODS --> ViTTrain[training/train_vitpose.py<br/>Lightning + Hydra + MLflow]:::model
+  ViTTrain --> BaseArt[artifacts/baseline/checkpoints/best.ckpt]:::artifact
   BaseArt --> Publish
-  Publish --> HFBase[HF Hub: baseline/ subdir]
+  Publish --> HFBase[HF Hub<br/>baseline/ subdir]:::external
 
-  MainArt --> Eval[evaluation/evaluate.py<br/>OKS-mAP + PCK]
+  MainArt --> Eval[evaluation/evaluate.py<br/>OKS-mAP + PCK]:::code
   BaseArt --> Eval
-  MainArt --> API[FastAPI /detect]
+  MainArt --> API[FastAPI /detect]:::serve
+
+  classDef external fill:#FFF3E0,stroke:#EF6C00,color:#BF360C
+  classDef data fill:#FFE0B2,stroke:#E65100,color:#BF360C
+  classDef code fill:#FFCC80,stroke:#E65100,color:#BF360C
+  classDef model fill:#FFB74D,stroke:#BF360C,color:#fff
+  classDef artifact fill:#FF9800,stroke:#BF360C,color:#fff
+  classDef serve fill:#F57C00,stroke:#BF360C,color:#fff
 ```
 
 ## Model-choice rationale
