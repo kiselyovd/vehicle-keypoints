@@ -23,3 +23,6 @@ data/processed/*
 .env.local
 *.pt
 site/
+
+# Local inference reports
+reports/
