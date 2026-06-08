@@ -1,0 +1,23 @@
+# @package _global_
+defaults:
+  - override /data: synth_phase0
+  - override /train: phase0_synth
+
+stages:
+  - name: synth_pretrain
+    data:
+      _target_: vehicle_keypoints.data.synth_loader.SynthPhase0Dataset
+      root: ${oc.env:VK_SYNTH_PHASE0_DIR}
+      schema: carfusion14
+    train: phase0_synth
+    output_ckpt: artifacts/phase0/synth_pretrained.ckpt
+
+  - name: real_finetune
+    data:
+      _target_: vehicle_keypoints.data.coco_dataset.CarFusionCocoDataset
+      root: ${oc.env:VK_CARFUSION_DIR}
+      split: train
+      subset_size: 100  # Phase 0: use only 100 real frames to keep fast
+    train: phase0_real_ft
+    init_from: artifacts/phase0/synth_pretrained.ckpt
+    output_ckpt: artifacts/phase0/main.ckpt
