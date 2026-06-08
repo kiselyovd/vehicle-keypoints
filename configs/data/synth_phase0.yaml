@@ -1,0 +1,3 @@
+_target_: vehicle_keypoints.data.synth_loader.SynthPhase0Dataset
+root: ${oc.env:VK_SYNTH_PHASE0_DIR,/path/to/ue5-vehicle-synth/UEProject/Saved/SynthOutput/phase0}
+schema: carfusion14
