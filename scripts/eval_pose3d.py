@@ -40,6 +40,21 @@ def _gt_center_px(gt, k: np.ndarray) -> tuple[float, float]:
     return (float(p[0] / p[2]), float(p[1] / p[2]))
 
 
+def _camera_id(img_name: str) -> str:
+    """Extract the camera id from a frame name like ..._Camera_6.jpg -> '6'."""
+    return Path(img_name).stem.rsplit("_Camera_", 1)[-1]
+
+
+def _intrinsics_for(
+    img_name: str, root: Path, cache: dict[str, np.ndarray]
+) -> np.ndarray:
+    """Load (and cache) the per-camera intrinsics matching this frame."""
+    cam_id = _camera_id(img_name)
+    if cam_id not in cache:
+        cache[cam_id] = load_intrinsics(root / "camera" / f"{cam_id}.cam")
+    return cache[cam_id]
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--apollo-root", required=True)
@@ -56,9 +71,8 @@ def main() -> None:
     model = CanonicalCarModel.load_default()
     det = Detector.from_checkpoint(args.checkpoint)
 
-    # Single shared intrinsics file (all frames are Camera_5 in this release).
-    cam_files = sorted((root / "camera").glob("*.cam"))
-    k = load_intrinsics(cam_files[0])
+    # Intrinsics are per-camera; the split mixes Camera_5 and Camera_6 frames.
+    k_cache: dict[str, np.ndarray] = {}
 
     names = (root / "split" / f"{args.split}.txt").read_text(encoding="utf-8").split()
     if args.limit:
@@ -71,6 +85,7 @@ def main() -> None:
         pose_path = root / "car_poses" / (Path(img_name).stem + ".json")
         if not img_path.exists() or not pose_path.exists():
             continue
+        k = _intrinsics_for(img_name, root, k_cache)
         gts = load_frame_cars(pose_path)
         n_gt += len(gts)
         dets = det.predict(img_path, conf=args.conf)

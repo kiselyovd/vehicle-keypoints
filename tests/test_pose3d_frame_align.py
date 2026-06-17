@@ -13,7 +13,7 @@ def test_alignment_is_a_valid_rotation() -> None:
     assert np.isclose(np.linalg.det(MODEL_TO_APOLLO), 1.0, atol=1e-9)
 
 
-def test_aligned_gt_rotation_applies_A_on_the_right() -> None:
+def test_aligned_gt_rotation_applies_a_on_the_right() -> None:
     r_gt = np.array([[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
     out = aligned_gt_rotation(r_gt)
     assert np.allclose(out, r_gt @ MODEL_TO_APOLLO)

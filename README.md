@@ -34,6 +34,23 @@ Test-set metrics on CarFusion test split (12 761 images, 39 252 predictions):
 
 OKS computed via pycocotools with uniform `kpt_oks_sigmas=0.05` (CarFusion has no established anatomical sigma calibration for 14 non-human keypoints); PCK@0.05 with a bbox-diagonal threshold. ViTPose-S baseline is **honestly under-trained** (15 epochs, `val=train` in `scripts/finalize_v010.py`, 85M params typically need 100+ epochs) — kept as a reference point but not representative of ViTPose capacity. See `reports/metrics_summary.json` for the full numbers.
 
+## Monocular 3D pose (PnP) baseline
+
+The 14 keypoints lift to a full **6DoF vehicle pose** by solving PnP (`cv2.solvePnPRansac`) against a single rigid metric car wireframe - the first 14 points of the [ue5-vehicle-synth](https://github.com/kiselyovd/ue5-vehicle-synth) 24-point schema. We run the CarFusion detector on the real [ApolloCar3D](http://apolloscape.auto/car_instance.html) validation split (272 frames) and compare the monocular PnP pose against ApolloCar3D's 3D ground-truth car poses:
+
+| Metric | Value |
+|---|---|
+| Rotation error, median | **13.6°** |
+| Rotation error, mean | 51.6° |
+| Translation error, median | 3.13 m |
+| Cars within 10° rotation | 37.8% |
+| Cars within 2 m translation | 35.7% |
+| Matched cars / detector hit-rate | 230 / 25.1% |
+
+![3D pose overlay](docs/images/pose3d_overlay.png)
+
+Honest caveats: this is a **single mean-sedan wireframe** (real cars vary in size and shape, an intrinsic error source), and the detector is trained on **CarFusion** then evaluated on **ApolloCar3D** - a real domain shift, which is why the hit-rate is 25% (ApolloCar3D also labels every distant and parked car). The model-to-Apollo frame alignment is a fixed rotation calibrated by SO(3) rotation averaging over matched cars (median rotation error 109° -> 16° on the calibration subset). The high rotation mean is the tail of PnP front/back flip ambiguities. This rigid-PnP baseline is the geometric foundation for the next milestone - a trainable, shape-aware monocular 3D model. Reproduce with `uv run python scripts/eval_pose3d.py`; numbers in `reports/pose3d_apollo.json`.
+
 ## Quick Start
 
 ```bash
