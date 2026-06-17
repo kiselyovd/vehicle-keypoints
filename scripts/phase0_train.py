@@ -39,6 +39,12 @@ def log(msg: str) -> None:
 # ---------------------------------------------------------------------------
 
 NUM_KPT = 14
+# Correct left/right swap for horizontal-flip augmentation on the 14-pt CarFusion
+# schema (wheels/lights/roof corners swap R<->L; exhaust + center map to themselves).
+# Without this, ultralytics' default fliplr=0.5 mirrors the image but NOT the keypoint
+# labels -> the "left wheel" lands on the right while still labelled left, corrupting
+# ~half the augmented samples. (Bug found 2026-06-17; earlier runs used identity.)
+CARFUSION_FLIP_IDX = [1, 0, 3, 2, 5, 4, 7, 6, 8, 10, 9, 12, 11, 13]
 
 
 def _coco_to_yolo_row(ann: dict, img_w: int, img_h: int) -> str:
@@ -125,7 +131,7 @@ def convert_synth_to_yolo(synth_root: Path, out_dir: Path) -> Path:
         "val": "images/val",
         "kpt_shape": [NUM_KPT, 3],
         "names": {0: "car"},
-        "flip_idx": list(range(NUM_KPT)),
+        "flip_idx": CARFUSION_FLIP_IDX,
     }
     data_yaml_path = out_dir / "synth_data.yaml"
     data_yaml_path.write_text(yaml.safe_dump(data_yaml, sort_keys=False), encoding="utf-8")
@@ -177,7 +183,7 @@ def build_real_subset_yaml(
         "val": str(val_img_dir.resolve()).replace("\\", "/"),
         "kpt_shape": [NUM_KPT, 3],
         "names": {0: "car"},
-        "flip_idx": list(range(NUM_KPT)),
+        "flip_idx": CARFUSION_FLIP_IDX,
     }
     data_yaml_path.write_text(yaml.safe_dump(data_yaml, sort_keys=False), encoding="utf-8")
     log(f"  wrote {data_yaml_path}")

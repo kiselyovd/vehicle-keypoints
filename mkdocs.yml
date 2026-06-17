@@ -64,4 +64,5 @@ nav:
   - Benchmarks: BENCHMARKS.md
   - Reproducibility: REPRODUCIBILITY.md
   - Limitations: LIMITATIONS.md
+  - Synthetic pre-training: phase0/synthetic-pretraining.md
   - API reference: api.md
