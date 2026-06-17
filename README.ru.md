@@ -49,6 +49,14 @@ OKS считается через pycocotools с равномерными `kpt_o
 
 3D ground truth - из датасета [ApolloScape 3D Car Instance](http://apolloscape.auto/car_instance.html) (бенчмарк ApolloCar3D, Song et al., CVPR 2019): 79 типов CAD-машин с 6DoF-позами на машину и интринсиками камеры `RIEGL-CS6`; лицензия research-only. Используем только его 3D-позы ground truth, не CAD-формы.
 
+## Синтетические данные: ue5-vehicle-synth
+
+24-точечная схема и синтетические тренировочные данные - из родственного проекта [`ue5-vehicle-synth`](https://github.com/kiselyovd/ue5-vehicle-synth), который генерирует кадры машин с разметкой keypoints внутри City Sample (Unreal Engine 5).
+
+![Демо ue5-vehicle-synth: машина едет, обретает 24-точечный скелет keypoints, затем едет дальше как wireframe-призрак](https://raw.githubusercontent.com/kiselyovd/ue5-vehicle-synth/main/docs/videos/demo-hero.gif)
+
+> Демо: в каждой сцене одна машина едет обычной, затем со своим 24-точечным скелетом keypoints, затем как wireframe-призрак. Полное видео и пайплайн - в [`ue5-vehicle-synth`](https://github.com/kiselyovd/ue5-vehicle-synth).
+
 ## Быстрый старт
 
 ```bash

@@ -53,6 +53,14 @@ Honest caveats: this is a **single mean-sedan wireframe** (real cars vary in siz
 
 3D ground truth from the [ApolloScape 3D Car Instance](http://apolloscape.auto/car_instance.html) dataset (the ApolloCar3D benchmark, Song et al., CVPR 2019) - 79 CAD car types with per-car 6DoF poses and `RIEGL-CS6` camera intrinsics; research-only license. We use only its 3D pose ground truth, not the CAD shapes.
 
+## Synthetic data: ue5-vehicle-synth
+
+The 24-point schema and synthetic training data come from the sister project [`ue5-vehicle-synth`](https://github.com/kiselyovd/ue5-vehicle-synth), which generates keypoint-labeled vehicle frames inside Epic's City Sample (Unreal Engine 5).
+
+![ue5-vehicle-synth demo: a car drives, gains its 24-point keypoint skeleton, then drives on as a wireframe ghost](https://raw.githubusercontent.com/kiselyovd/ue5-vehicle-synth/main/docs/videos/demo-hero.gif)
+
+> Demo: each scene is a single vehicle driving normally, then with its 24-point keypoint skeleton, then as a wireframe ghost. Full video and pipeline at [`ue5-vehicle-synth`](https://github.com/kiselyovd/ue5-vehicle-synth).
+
 ## Quick Start
 
 ```bash
