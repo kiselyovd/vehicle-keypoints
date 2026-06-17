@@ -42,7 +42,7 @@ def solve_pose(
         return None
     inl = inliers.ravel()
     # Refine on inliers with the iterative solver.
-    ok2, rvec, tvec = cv2.solvePnP(
+    _ok, rvec, tvec = cv2.solvePnP(
         obj[inl], img[inl], k, None, rvec, tvec, useExtrinsicGuess=True,
         flags=cv2.SOLVEPNP_ITERATIVE,
     )
