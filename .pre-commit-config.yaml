@@ -1,8 +1,22 @@
+# Hooks mirror the CI lint-test job EXACTLY by running each tool through
+# `uv run` in the project environment (language: system). The old config used
+# pre-commit's isolated per-hook envs, which could not see the uv-installed deps
+# (deptry/mypy especially) - so hooks and CI disagreed and commits needed
+# --no-verify. With these local hooks, "if the commit passes, CI passes".
+#
+#   uv run pre-commit install --install-hooks
+#   uv run pre-commit install --hook-type pre-push
+#
+# pre-commit stage  = fast gates (ruff, format, mypy, deptry, bandit, interrogate)
+# pre-push stage    = the full pytest suite (~1 min; too slow for every commit)
+
 repos:
+  # --- lightweight file hygiene (fine in isolated envs) ---
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
       - id: check-yaml
+        args: [--unsafe]  # mkdocs.yml uses !!python/name: tags the safe loader rejects
       - id: check-toml
       - id: check-added-large-files
         args: [--maxkb=1024]
@@ -10,41 +24,6 @@ repos:
       - id: trailing-whitespace
       - id: mixed-line-ending
         args: [--fix=lf]
-
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.10
-    hooks:
-      - id: ruff
-        args: [--fix]
-      - id: ruff-format
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.20.1
-    hooks:
-      - id: mypy
-        files: ^(src|scripts)/
-        args: [--config-file=pyproject.toml]
-        additional_dependencies:
-          - types-PyYAML
-          - types-requests
-
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.9.4
-    hooks:
-      - id: bandit
-        args: ["-c", "pyproject.toml", "-r", "src", "scripts"]
-        additional_dependencies: ["bandit[toml]"]
-
-  - repo: https://github.com/econchick/interrogate
-    rev: 1.7.0
-    hooks:
-      - id: interrogate
-        args: ["-c", "pyproject.toml"]
-
-  - repo: https://github.com/fpgmaas/deptry
-    rev: 0.25.1
-    hooks:
-      - id: deptry
 
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.12
@@ -55,9 +34,65 @@ repos:
     rev: v2.4.2
     hooks:
       - id: codespell
-        args: ["--skip=uv.lock,*.ipynb,*.lock"]
+        args:
+          - "--skip=uv.lock,*.ipynb,*.lock,*.svg,*.csv"
+          - "--ignore-words-list=ue,nd,ot,fo"
 
   - repo: https://github.com/kynan/nbstripout
     rev: 0.9.1
     hooks:
       - id: nbstripout
+
+  # --- CI-identical gates, run in the uv project env so tools resolve and
+  #     results match the workflow exactly ---
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check (uv)
+        entry: uv run ruff check --fix
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+      - id: ruff-format
+        name: ruff format (uv)
+        entry: uv run ruff format
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+      - id: mypy
+        name: mypy src scripts (uv)
+        entry: uv run mypy src scripts
+        language: system
+        pass_filenames: false
+        files: ^(src|scripts)/.*\.py$
+        require_serial: true
+      - id: deptry
+        name: deptry (uv)
+        entry: uv run deptry .
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: bandit
+        name: bandit (uv)
+        entry: uv run bandit -r src scripts -c pyproject.toml
+        language: system
+        pass_filenames: false
+        files: ^(src|scripts)/.*\.py$
+        require_serial: true
+      - id: interrogate
+        name: interrogate (uv)
+        entry: uv run interrogate -c pyproject.toml src scripts
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      # full test suite - only on push (too slow for every commit)
+      - id: pytest
+        name: pytest (uv, pre-push)
+        entry: uv run pytest -q
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+        require_serial: true
