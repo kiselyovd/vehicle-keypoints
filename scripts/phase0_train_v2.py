@@ -97,7 +97,11 @@ def main() -> None:
     real_yaml = Path(
         os.environ.get("VK_REAL100_YAML", str(work / "real_subset" / "real_subset_data.yaml"))
     )
-    for p, name in ((V1_CKPT, "v1 checkpoint"), (synth_yaml, "synth yaml"), (real_yaml, "real-100 yaml")):
+    for p, name in (
+        (V1_CKPT, "v1 checkpoint"),
+        (synth_yaml, "synth yaml"),
+        (real_yaml, "real-100 yaml"),
+    ):
         if not p.exists():
             log(f"FATAL: {name} not found at {p}")
             raise SystemExit(2)

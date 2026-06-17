@@ -280,8 +280,8 @@ def stage2_real_finetune(
         epochs=epochs,
         imgsz=imgsz,
         batch=batch,
-        lr0=1e-4,    # 10x lower LR for fine-tuning
-        freeze=10,   # freeze first 10 backbone layers
+        lr0=1e-4,  # 10x lower LR for fine-tuning
+        freeze=10,  # freeze first 10 backbone layers
         patience=max(5, int(epochs * 0.4)),
     )
 
@@ -332,9 +332,13 @@ def run_eval(ckpt: Path, out_json: Path) -> dict:
     python_exe = str(venv_python) if venv_python.is_file() else sys.executable
 
     cmd = [
-        python_exe, "-m", "vehicle_keypoints.evaluation.evaluate",
-        "--checkpoint", str(ckpt),
-        "--out", str(out_json),
+        python_exe,
+        "-m",
+        "vehicle_keypoints.evaluation.evaluate",
+        "--checkpoint",
+        str(ckpt),
+        "--out",
+        str(out_json),
     ]
     log(f"eval cmd: {' '.join(cmd)}")
     result = subprocess.run(cmd, check=True, cwd=str(repo_root))
@@ -447,7 +451,9 @@ def main() -> None:
     t0 = time.time()
 
     synth_dir = Path(
-        os.environ.get("VK_SYNTH_PHASE0_DIR", "D:/Projects/GitHub/ue5-vehicle-synth/captures/phase0")
+        os.environ.get(
+            "VK_SYNTH_PHASE0_DIR", "D:/Projects/GitHub/ue5-vehicle-synth/captures/phase0"
+        )
     )
     if not synth_dir.is_dir():
         raise SystemExit(
@@ -524,7 +530,9 @@ def main() -> None:
 
     # --- 9. Kill-switch report ---
     report_path = repo_root / "docs" / "phase0" / "kill_switch_report.md"
-    write_kill_switch_report(v1_metrics, synth_metrics, phase0_metrics, control_metrics, report_path)
+    write_kill_switch_report(
+        v1_metrics, synth_metrics, phase0_metrics, control_metrics, report_path
+    )
 
     elapsed = (time.time() - t0) / 60
     log(f"Phase 0 complete in {elapsed:.1f} min")

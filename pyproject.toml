@@ -140,7 +140,8 @@ exclude_dirs = ["tests", "notebooks", "data", "artifacts"]
 # B614: pytorch_load — we load only our own trained checkpoints
 # B615: huggingface_unsafe_download — we download only our own / trusted HF repos
 # B701: jinja2_autoescape_false — templates render Markdown/YAML, not HTML
-skips = ["B101", "B404", "B603", "B614", "B615", "B701"]
+# B311: random — used only for deterministic, seeded data splits (not crypto)
+skips = ["B101", "B311", "B404", "B603", "B614", "B615", "B701"]
 
 [tool.interrogate]
 ignore-init-method = true
@@ -165,6 +166,9 @@ ignore = ["DEP004"]
 # callbacks; keep declared so the env is reproducible without pulling them in
 # transitively at runtime only.
 DEP002 = ["nbstripout", "ipykernel", "pyyaml", "rich", "torchvision", "torchmetrics"]
+# phase0_train / phase0_train_v4 are local sibling scripts imported across the
+# phase0 drivers via sys.path (not installable packages).
+DEP001 = ["phase0_train", "phase0_train_v4"]
 
 [tool.codespell]
 skip = "uv.lock,*.ipynb,*.lock,data/*"

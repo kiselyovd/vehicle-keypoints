@@ -86,14 +86,12 @@ def main() -> None:
     control_eval_out = REPO_ROOT / "reports" / "phase0_control_metrics.json"
     try:
         control_metrics = run_eval(control_ckpt_copy, control_eval_out)
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         log(f"WARNING: control eval failed: {exc}")
         control_metrics = None
 
     # --- 8. Load v1 baseline + stage-1 synth metrics ---
-    v1_metrics = json.loads(
-        (REPO_ROOT / "reports" / "metrics.json").read_text(encoding="utf-8")
-    )
+    v1_metrics = json.loads((REPO_ROOT / "reports" / "metrics.json").read_text(encoding="utf-8"))
     synth_json = REPO_ROOT / "reports" / "phase0_synth_metrics.json"
     synth_metrics = (
         json.loads(synth_json.read_text(encoding="utf-8")) if synth_json.is_file() else None
@@ -101,7 +99,9 @@ def main() -> None:
 
     # --- 9. Kill-switch report ---
     report_path = REPO_ROOT / "docs" / "phase0" / "kill_switch_report.md"
-    write_kill_switch_report(v1_metrics, synth_metrics, phase0_metrics, control_metrics, report_path)
+    write_kill_switch_report(
+        v1_metrics, synth_metrics, phase0_metrics, control_metrics, report_path
+    )
 
     log(f"Phase 0 complete in {(time.time() - t0) / 60:.1f} min")
 

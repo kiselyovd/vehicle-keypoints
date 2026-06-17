@@ -48,10 +48,10 @@ def main() -> None:
     log(f"trained -> {best}")
     m = run_eval(best, REPO / "reports" / "baseline_flipfix_metrics.json")
     v1 = json.loads((REPO / "reports" / "metrics.json").read_text(encoding="utf-8"))
+    delta = (m["oks_map"] - v1["oks_map"]) * 100
     log(
-        "BASELINE-FLIPFIX OKS-mAP %.4f (v1 %.4f, delta %+.2fpp) | PCK %.4f (v1 %.4f)"
-        % (m["oks_map"], v1["oks_map"], (m["oks_map"] - v1["oks_map"]) * 100,
-           m.get("pck_0.05", 0), v1.get("pck_0.05", 0))
+        f"BASELINE-FLIPFIX OKS-mAP {m['oks_map']:.4f} (v1 {v1['oks_map']:.4f}, "
+        f"delta {delta:+.2f}pp) | PCK {m.get('pck_0.05', 0):.4f} (v1 {v1.get('pck_0.05', 0):.4f})"
     )
 
 

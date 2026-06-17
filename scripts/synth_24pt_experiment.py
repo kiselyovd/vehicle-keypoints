@@ -12,7 +12,6 @@ from __future__ import annotations
 import json
 import random
 import shutil
-import sys
 from pathlib import Path
 
 import yaml
@@ -36,7 +35,11 @@ def _row(ann: dict, w: int, h: int) -> str:
         if vi <= 0:
             parts += ["0.000000", "0.000000", "0"]
         else:
-            parts += [f"{min(max(kx / w, 0.0), 1.0):.6f}", f"{min(max(ky / h, 0.0), 1.0):.6f}", str(vi)]
+            parts += [
+                f"{min(max(kx / w, 0.0), 1.0):.6f}",
+                f"{min(max(ky / h, 0.0), 1.0):.6f}",
+                str(vi),
+            ]
     return " ".join(parts)
 
 
@@ -63,7 +66,9 @@ def convert() -> Path:
                 continue
             shutil.copy2(src, WORK / "images" / sp / src.name)
             rows = [_row(a, im["width"], im["height"]) for a in anns.get(iid, [])]
-            (WORK / "labels" / sp / (src.stem + ".txt")).write_text("\n".join(rows) + "\n", encoding="utf-8")
+            (WORK / "labels" / sp / (src.stem + ".txt")).write_text(
+                "\n".join(rows) + "\n", encoding="utf-8"
+            )
     yml = WORK / "synth24.yaml"
     yml.write_text(
         yaml.safe_dump(
@@ -103,11 +108,11 @@ def main() -> None:
     )
     r = model.val(data=str(yml), split="val", imgsz=480, workers=0, verbose=False)
     print(
-        "SYNTH24-VAL  box mAP50 %.4f  mAP50-95 %.4f | pose mAP50 %.4f  mAP50-95 %.4f"
-        % (r.box.map50, r.box.map, r.pose.map50, r.pose.map)
+        f"SYNTH24-VAL  box mAP50 {r.box.map50:.4f}  mAP50-95 {r.box.map:.4f} "
+        f"| pose mAP50 {r.pose.map50:.4f}  mAP50-95 {r.pose.map:.4f}"
     )
     print("best:", RUN_DIR / "synth24" / "weights" / "best.pt")
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

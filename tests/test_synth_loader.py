@@ -17,25 +17,46 @@ def synth_dir(tmp_path: Path) -> Path:
 
     # Two placeholder PNGs (any valid PNG; pillow can write a 32x32 white square)
     from PIL import Image
+
     for i in (1, 2):
         Image.new("RGB", (32, 32), (255, 255, 255)).save(rgb / f"frame_{i:06d}_cam0.png")
 
     coco = {
         "info": {},
         "images": [
-            {"id": 1, "file_name": "rgb/frame_000001_cam0.png", "width": 32, "height": 32, "metadata": {}},
-            {"id": 2, "file_name": "rgb/frame_000002_cam0.png", "width": 32, "height": 32, "metadata": {}},
+            {
+                "id": 1,
+                "file_name": "rgb/frame_000001_cam0.png",
+                "width": 32,
+                "height": 32,
+                "metadata": {},
+            },
+            {
+                "id": 2,
+                "file_name": "rgb/frame_000002_cam0.png",
+                "width": 32,
+                "height": 32,
+                "metadata": {},
+            },
         ],
         "annotations": [
             {
-                "id": 1, "image_id": 1, "category_id": 1,
-                "bbox": [4, 4, 20, 20], "area": 400, "iscrowd": 0,
+                "id": 1,
+                "image_id": 1,
+                "category_id": 1,
+                "bbox": [4, 4, 20, 20],
+                "area": 400,
+                "iscrowd": 0,
                 "keypoints": [10, 10, 2] + [0, 0, 0] * 23,
                 "num_keypoints": 1,
             },
             {
-                "id": 2, "image_id": 2, "category_id": 1,
-                "bbox": [4, 4, 20, 20], "area": 400, "iscrowd": 0,
+                "id": 2,
+                "image_id": 2,
+                "category_id": 1,
+                "bbox": [4, 4, 20, 20],
+                "area": 400,
+                "iscrowd": 0,
                 "keypoints": [12, 12, 2] + [0, 0, 0] * 23,
                 "num_keypoints": 1,
             },

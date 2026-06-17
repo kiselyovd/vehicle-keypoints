@@ -139,8 +139,7 @@ def main() -> None:
         )
 
     title = (
-        "# Phase 0 Kill-Switch Report"
-        " (v4: mixed training, wide multi-venue MRQ synth v4, real x8)"
+        "# Phase 0 Kill-Switch Report (v4: mixed training, wide multi-venue MRQ synth v4, real x8)"
     )
     report = f"""{title}
 

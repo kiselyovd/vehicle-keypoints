@@ -41,7 +41,9 @@ RUN_DIR = REPO_ROOT / "artifacts" / "phase0_v3_runs"
 REPORTS = REPO_ROOT / "reports"
 WORK = REPO_ROOT / "artifacts" / "phase0_work"
 SYNTH_V2_ROOT = Path(
-    os.environ.get("VK_SYNTH_PHASE0V2_DIR", "D:/Projects/GitHub/ue5-vehicle-synth/captures/phase0_v2")
+    os.environ.get(
+        "VK_SYNTH_PHASE0V2_DIR", "D:/Projects/GitHub/ue5-vehicle-synth/captures/phase0_v2"
+    )
 )
 
 
@@ -68,7 +70,10 @@ def build_mixed_yaml(synth_yolo_dir: Path, real_subset_dir: Path, out_path: Path
 
 def main() -> None:
     t0 = time.time()
-    for p, name in ((V1_CKPT, "v1 ckpt"), (SYNTH_V2_ROOT / "annotations" / "coco.json", "synth v2 coco")):
+    for p, name in (
+        (V1_CKPT, "v1 ckpt"),
+        (SYNTH_V2_ROOT / "annotations" / "coco.json", "synth v2 coco"),
+    ):
         if not p.exists():
             log(f"FATAL: {name} missing at {p}")
             raise SystemExit(2)

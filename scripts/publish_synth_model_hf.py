@@ -101,10 +101,20 @@ def main() -> None:
     api.create_repo(REPO, repo_type="model", exist_ok=True)
     card = Path("artifacts/synth24_runs/synth24/MODEL_CARD.md")
     card.write_text(CARD, encoding="utf-8")
-    api.upload_file(path_or_fileobj=str(WEIGHTS), path_in_repo="best.pt", repo_id=REPO, repo_type="model",
-                    commit_message="Add synth-only 24-pt YOLO-pose weights")
-    api.upload_file(path_or_fileobj=str(card), path_in_repo="README.md", repo_id=REPO, repo_type="model",
-                    commit_message="Add model card")
+    api.upload_file(
+        path_or_fileobj=str(WEIGHTS),
+        path_in_repo="best.pt",
+        repo_id=REPO,
+        repo_type="model",
+        commit_message="Add synth-only 24-pt YOLO-pose weights",
+    )
+    api.upload_file(
+        path_or_fileobj=str(card),
+        path_in_repo="README.md",
+        repo_id=REPO,
+        repo_type="model",
+        commit_message="Add model card",
+    )
     print(f"published -> https://huggingface.co/{REPO}")
 
 

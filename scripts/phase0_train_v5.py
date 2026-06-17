@@ -58,8 +58,15 @@ def _arm_yaml(train_dirs: list[Path], out_path: Path) -> Path:
 def _train_eval(name: str, train_dirs: list[Path], metrics_path: Path) -> dict:
     yml = _arm_yaml(train_dirs, WORK / f"{name}.yaml")
     best = _yolo_train(
-        init_model=str(V1_CKPT), data_yaml=yml, run_dir=RUN_DIR, name=name,
-        epochs=25, imgsz=480, batch=16, lr0=2e-4, patience=10,
+        init_model=str(V1_CKPT),
+        data_yaml=yml,
+        run_dir=RUN_DIR,
+        name=name,
+        epochs=25,
+        imgsz=480,
+        batch=16,
+        lr0=2e-4,
+        patience=10,
     )
     return run_eval(best, metrics_path)
 
@@ -79,7 +86,9 @@ def main() -> None:
     log("=== v5 arm B: v1 ckpt + 100 real x8 (no synth), corrected flip ===")
     arm_b = _train_eval("v5_control_realx8", [real_x8], REPORTS / "phase0_v5_armB_metrics.json")
     log("=== v5 arm A: v1 ckpt + MIXED (synth_v4 + 100 real x8), corrected flip ===")
-    arm_a = _train_eval("v5_mixed_finetune", [synth_yolo, real_x8], REPORTS / "phase0_v5_armA_metrics.json")
+    arm_a = _train_eval(
+        "v5_mixed_finetune", [synth_yolo, real_x8], REPORTS / "phase0_v5_armA_metrics.json"
+    )
 
     v1 = json.loads((REPORTS / "metrics.json").read_text(encoding="utf-8"))
     v1_oks, a_oks, b_oks = v1["oks_map"], arm_a["oks_map"], arm_b["oks_map"]

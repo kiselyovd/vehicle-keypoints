@@ -40,10 +40,7 @@ class SynthPhase0Dataset(Dataset):
         flat = ann["keypoints"]
         kpts_24 = np.array(flat, dtype=np.float32).reshape(24, 3)
 
-        if self.schema == "carfusion14":
-            kpts = kpts_24[:14]
-        else:
-            kpts = kpts_24
+        kpts = kpts_24[:14] if self.schema == "carfusion14" else kpts_24
 
         bbox = np.array(ann["bbox"], dtype=np.float32)
 

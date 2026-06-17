@@ -34,7 +34,6 @@ from pathlib import Path
 
 import yaml
 
-
 # ---------------------------------------------------------------------------
 # Core converter
 # ---------------------------------------------------------------------------
@@ -139,9 +138,13 @@ def convert(
 def main() -> None:
     p = argparse.ArgumentParser(description="Convert COCO synth dataset to YOLO-pose format.")
     p.add_argument("--coco", required=True, help="Path to COCO JSON annotation file")
-    p.add_argument("--images", required=True, help="Root dir for images (file_name is relative to this)")
+    p.add_argument(
+        "--images", required=True, help="Root dir for images (file_name is relative to this)"
+    )
     p.add_argument("--out", required=True, help="Output directory for YOLO dataset")
-    p.add_argument("--num-kpt", type=int, default=14, help="Number of keypoints to keep (default 14)")
+    p.add_argument(
+        "--num-kpt", type=int, default=14, help="Number of keypoints to keep (default 14)"
+    )
     p.add_argument("--val-frac", type=float, default=0.1, help="Validation fraction (default 0.1)")
     p.add_argument("--seed", type=int, default=42, help="Random seed for train/val split")
     args = p.parse_args()
