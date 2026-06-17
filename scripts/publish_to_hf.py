@@ -28,17 +28,26 @@ _METRIC_DISPLAY_NAMES = {
     "n_predictions": ("Predictions", None),
 }
 
-# Human-friendly two-model comparison table for the model card body
-_COMPARISON_TABLE = """\
-| Model | OKS-mAP | OKS-mAP@50 | PCK@0.05 | Params | Notes |
-|---|---|---|---|---|---|
-| **YOLO26-pose (ours)** | **22.0%** | **35.0%** | **49.6%** | ~3M | YOLO26n-pose, 100 ep |
-| ViTPose-S (baseline) | 0.1% | 13.7% | — | 85M | Top-down; 15 epochs, needs 100+ |"""
-
 
 def _format_metrics(metrics: dict) -> str:
-    """Return the human-readable comparison table regardless of raw metrics dict."""
-    return _COMPARISON_TABLE
+    """Build the model-card comparison table, filling the 'ours' row from the real
+    metrics dict so the body always matches the model-index (the ViTPose-S baseline
+    row is a static reference comparison)."""
+
+    def pct(key: str) -> str:
+        v = metrics.get(key)
+        return f"{v * 100:.1f}%" if isinstance(v, (int, float)) else "—"
+
+    ours = (
+        f"| **YOLO26-pose (ours)** | **{pct('oks_map')}** | **{pct('oks_map_50')}** "
+        f"| **{pct('pck_0.05')}** | ~3M | YOLO26n-pose, 30 ep |"
+    )
+    return (
+        "| Model | OKS-mAP | OKS-mAP@50 | PCK@0.05 | Params | Notes |\n"
+        "|---|---|---|---|---|---|\n"
+        f"{ours}\n"
+        "| ViTPose-S (baseline) | 0.1% | 13.7% | — | 85M | Top-down; 15 epochs, needs 100+ |"
+    )
 
 
 def _build_tags(domain_tag: str, extra_csv: str, library_name: str) -> list[str]:
