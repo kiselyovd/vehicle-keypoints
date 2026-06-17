@@ -51,6 +51,8 @@ The 14 keypoints lift to a full **6DoF vehicle pose** by solving PnP (`cv2.solve
 
 Honest caveats: this is a **single mean-sedan wireframe** (real cars vary in size and shape, an intrinsic error source), and the detector is trained on **CarFusion** then evaluated on **ApolloCar3D** - a real domain shift, which is why the hit-rate is 25% (ApolloCar3D also labels every distant and parked car). The model-to-Apollo frame alignment is a fixed rotation calibrated by SO(3) rotation averaging over matched cars (median rotation error 109° -> 16° on the calibration subset). The high rotation mean is the tail of PnP front/back flip ambiguities. This rigid-PnP baseline is the geometric foundation for the next milestone - a trainable, shape-aware monocular 3D model. Reproduce with `uv run python scripts/eval_pose3d.py`; numbers in `reports/pose3d_apollo.json`.
 
+3D ground truth from the [ApolloScape 3D Car Instance](http://apolloscape.auto/car_instance.html) dataset (the ApolloCar3D benchmark, Song et al., CVPR 2019) - 79 CAD car types with per-car 6DoF poses and `RIEGL-CS6` camera intrinsics; research-only license. We use only its 3D pose ground truth, not the CAD shapes.
+
 ## Quick Start
 
 ```bash
