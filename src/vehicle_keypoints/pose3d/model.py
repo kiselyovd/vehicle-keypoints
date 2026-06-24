@@ -34,20 +34,28 @@ CARFUSION_14_CONFIG_KEYS: tuple[str, ...] = (
 
 # CarFusion canonical 18-edge skeleton (indices 0..13).
 CARFUSION_SKELETON: tuple[tuple[int, int], ...] = (
-    (0, 2), (1, 3), (0, 1), (2, 3),
-    (9, 11), (10, 12), (9, 10), (11, 12),
-    (4, 0), (4, 9), (4, 5),
-    (5, 1), (5, 10),
-    (6, 2), (6, 11),
-    (7, 3), (7, 12),
+    (0, 2),
+    (1, 3),
+    (0, 1),
+    (2, 3),
+    (9, 11),
+    (10, 12),
+    (9, 10),
+    (11, 12),
+    (4, 0),
+    (4, 9),
+    (4, 5),
+    (5, 1),
+    (5, 10),
+    (6, 2),
+    (6, 11),
+    (7, 3),
+    (7, 12),
     (6, 7),
 )
 
 _DEFAULT_CONFIG = (
-    Path(__file__).resolve().parents[3]
-    / "configs"
-    / "pose3d"
-    / "citysample_vehCar_vehicle13.json"
+    Path(__file__).resolve().parents[3] / "configs" / "pose3d" / "citysample_vehCar_vehicle13.json"
 )
 
 
@@ -69,8 +77,6 @@ class CanonicalCarModel:
         """Load 14 canonical keypoints (metres) from a 24-point vehicle config."""
         data = json.loads(Path(path).read_text(encoding="utf-8"))
         kpts = data["keypoints"]
-        pts = np.array(
-            [kpts[name] for name in CARFUSION_14_CONFIG_KEYS], dtype=np.float64
-        )
+        pts = np.array([kpts[name] for name in CARFUSION_14_CONFIG_KEYS], dtype=np.float64)
         pts /= 100.0  # centimetres -> metres
         return cls(points=pts, names=CARFUSION_14_CONFIG_KEYS, skeleton=CARFUSION_SKELETON)

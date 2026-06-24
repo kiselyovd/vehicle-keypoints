@@ -45,9 +45,7 @@ def _camera_id(img_name: str) -> str:
     return Path(img_name).stem.rsplit("_Camera_", 1)[-1]
 
 
-def _intrinsics_for(
-    img_name: str, root: Path, cache: dict[str, np.ndarray]
-) -> np.ndarray:
+def _intrinsics_for(img_name: str, root: Path, cache: dict[str, np.ndarray]) -> np.ndarray:
     """Load (and cache) the per-camera intrinsics matching this frame."""
     cam_id = _camera_id(img_name)
     if cam_id not in cache:

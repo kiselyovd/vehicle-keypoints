@@ -13,9 +13,7 @@ _WIRE_COLOR = (0, 255, 0)  # green (BGR)
 _BOX_COLOR = (0, 200, 255)  # amber
 
 
-def project_model(
-    points_3d: np.ndarray, r: np.ndarray, t: np.ndarray, k: np.ndarray
-) -> np.ndarray:
+def project_model(points_3d: np.ndarray, r: np.ndarray, t: np.ndarray, k: np.ndarray) -> np.ndarray:
     """Project model-frame 3D points to pixels via X_cam = r @ X + t."""
     rvec = cv2.Rodrigues(np.ascontiguousarray(r, dtype=np.float64))[0]
     proj, _ = cv2.projectPoints(
@@ -33,18 +31,31 @@ def _bbox_corners(points_3d: np.ndarray) -> np.ndarray:
     hi = points_3d.max(axis=0)
     return np.array(
         [
-            [lo[0], lo[1], lo[2]], [hi[0], lo[1], lo[2]],
-            [hi[0], hi[1], lo[2]], [lo[0], hi[1], lo[2]],
-            [lo[0], lo[1], hi[2]], [hi[0], lo[1], hi[2]],
-            [hi[0], hi[1], hi[2]], [lo[0], hi[1], hi[2]],
+            [lo[0], lo[1], lo[2]],
+            [hi[0], lo[1], lo[2]],
+            [hi[0], hi[1], lo[2]],
+            [lo[0], hi[1], lo[2]],
+            [lo[0], lo[1], hi[2]],
+            [hi[0], lo[1], hi[2]],
+            [hi[0], hi[1], hi[2]],
+            [lo[0], hi[1], hi[2]],
         ]
     )
 
 
 _BOX_EDGES = (
-    (0, 1), (1, 2), (2, 3), (3, 0),
-    (4, 5), (5, 6), (6, 7), (7, 4),
-    (0, 4), (1, 5), (2, 6), (3, 7),
+    (0, 1),
+    (1, 2),
+    (2, 3),
+    (3, 0),
+    (4, 5),
+    (5, 6),
+    (6, 7),
+    (7, 4),
+    (0, 4),
+    (1, 5),
+    (2, 6),
+    (3, 7),
 )
 
 

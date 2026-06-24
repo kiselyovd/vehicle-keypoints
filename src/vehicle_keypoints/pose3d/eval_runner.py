@@ -51,9 +51,7 @@ def pose_error_row(pred: PredPose, gt: ApolloCar) -> dict[str, float]:
     return {"rot_deg": rot, "trans_m": trans, "rel_trans": trans / depth}
 
 
-def aggregate_metrics(
-    rows: list[dict[str, float]], n_gt: int, n_detected: int
-) -> dict[str, float]:
+def aggregate_metrics(rows: list[dict[str, float]], n_gt: int, n_detected: int) -> dict[str, float]:
     """Aggregate per-match rows into summary metrics."""
     rot = np.array([r["rot_deg"] for r in rows]) if rows else np.array([0.0])
     trans = np.array([r["trans_m"] for r in rows]) if rows else np.array([0.0])
