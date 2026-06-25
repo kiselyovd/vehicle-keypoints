@@ -59,7 +59,9 @@ _BOX_EDGES = (
 )
 
 
-def _crop_around(img: np.ndarray, xywh: tuple[float, float, float, float], pad: float) -> np.ndarray:
+def _crop_around(
+    img: np.ndarray, xywh: tuple[float, float, float, float], pad: float
+) -> np.ndarray:
     """Crop the image to a padded box around a 2D detection (x, y, w, h)."""
     h_img, w_img = img.shape[:2]
     x, y, w, h = xywh
