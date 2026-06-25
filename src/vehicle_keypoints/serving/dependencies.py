@@ -1,4 +1,4 @@
-"""FastAPI DI — lazy-loaded Detector singleton."""
+"""FastAPI DI - lazy-loaded Detector singleton."""
 
 from __future__ import annotations
 

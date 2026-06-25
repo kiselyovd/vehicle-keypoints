@@ -19,7 +19,7 @@ class KeypointsDataModule(L.LightningDataModule):
         val_annotations: str | Path,
         batch_size: int = 32,
         num_workers: int = 4,
-        image_size: int = 256,  # unused — kept for Hydra cfg compatibility
+        image_size: int = 256,  # unused - kept for Hydra cfg compatibility
         seed: int = 42,
     ) -> None:
         super().__init__()

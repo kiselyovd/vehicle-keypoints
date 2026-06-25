@@ -1,6 +1,6 @@
 # vehicle-keypoints
 
-Production-grade 14-keypoint vehicle pose estimation on CarFusion — YOLO26-pose (main) + ViTPose-S (baseline).
+Production-grade 14-keypoint vehicle pose estimation on CarFusion - YOLO26-pose (main) + ViTPose-S (baseline).
 
 [![CI](https://img.shields.io/github/actions/workflow/status/kiselyovd/vehicle-keypoints/ci.yml?branch=main&label=CI&style=for-the-badge&logo=github)](https://github.com/kiselyovd/vehicle-keypoints/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-mkdocs-526CFE?style=for-the-badge&logo=materialformkdocs&logoColor=white)](https://kiselyovd.github.io/vehicle-keypoints/)
@@ -11,15 +11,15 @@ Production-grade 14-keypoint vehicle pose estimation on CarFusion — YOLO26-pos
 
 <p align="center"><img src="docs/images/banner.jpg" width="100%" alt="vehicle-keypoints - 14-keypoint car pose"/></p>
 
-End-to-end toolkit for detecting vehicles and regressing **14 anatomical keypoints per car** (wheels, head- and tail-lights, roof corners, exhaust, body centre) on the CarFusion (CMU) dataset. The main model is a single-stage **YOLO26-pose** detector (Ultralytics); the baseline is a top-down **ViTPose-S** wrapped in PyTorch Lightning and fed by a YOLO car detector. The stack is Hydra-configured, trained from the CLI, evaluated with OKS-mAP + PCK@0.05, served over FastAPI + Docker, documented with MkDocs Material, and distributed through the Hugging Face Hub. Research and education only — **not a primary sensor for autonomous driving**.
+End-to-end toolkit for detecting vehicles and regressing **14 anatomical keypoints per car** (wheels, head- and tail-lights, roof corners, exhaust, body centre) on the CarFusion (CMU) dataset. The main model is a single-stage **YOLO26-pose** detector (Ultralytics); the baseline is a top-down **ViTPose-S** wrapped in PyTorch Lightning and fed by a YOLO car detector. The stack is Hydra-configured, trained from the CLI, evaluated with OKS-mAP + PCK@0.05, served over FastAPI + Docker, documented with MkDocs Material, and distributed through the Hugging Face Hub. Research and education only - **not a primary sensor for autonomous driving**.
 
-> **Part of the [kiselyovd ML portfolio](https://github.com/kiselyovd#ml-portfolio)** — production-grade ML projects sharing one [cookiecutter template](https://github.com/kiselyovd/ml-project-template).
+> **Part of the [kiselyovd ML portfolio](https://github.com/kiselyovd#ml-portfolio)** - production-grade ML projects sharing one [cookiecutter template](https://github.com/kiselyovd/ml-project-template).
 
 📖 [English docs](https://kiselyovd.github.io/vehicle-keypoints/) • 🇷🇺 [Русский README](README.ru.md) • 🤗 [HF Hub model](https://huggingface.co/kiselyovd/vehicle-keypoints)
 
 ## Dataset
 
-[CarFusion](http://www.cs.cmu.edu/~mvo/index_files/CarFusion.html) — a multi-view traffic-scene dataset from Carnegie Mellon University (Dinesh Reddy, Minh Vo, and Srinivasa Narasimhan, CVPR 2018) with **14 keypoint annotations per car**. The raw release is pre-converted to COCO-keypoints JSON via `scripts/convert_carfusion_to_coco.py`, and `src/vehicle_keypoints/data/prepare.py` applies a **scene-level 90/10 split** across the 8 training scenes (val = `car_craig2`, the other 7 go to train) so no scene appears in more than one partition.
+[CarFusion](http://www.cs.cmu.edu/~mvo/index_files/CarFusion.html) - a multi-view traffic-scene dataset from Carnegie Mellon University (Dinesh Reddy, Minh Vo, and Srinivasa Narasimhan, CVPR 2018) with **14 keypoint annotations per car**. The raw release is pre-converted to COCO-keypoints JSON via `scripts/convert_carfusion_to_coco.py`, and `src/vehicle_keypoints/data/prepare.py` applies a **scene-level 90/10 split** across the 8 training scenes (val = `car_craig2`, the other 7 go to train) so no scene appears in more than one partition.
 
 Resulting image counts: **16,713 train / 3,474 val / 12,761 test**. CarFusion is © CMU and released under its own research-only license.
 
@@ -32,7 +32,7 @@ Test-set metrics on CarFusion test split (12 761 images, 39 252 predictions):
 | **YOLO26-pose** (main) | **50.4%** | **70.4%** | **76.1%** |
 | ViTPose-S (baseline) | 0.1% | 0.4% | 13.7% |
 
-OKS computed via pycocotools with uniform `kpt_oks_sigmas=0.05` (CarFusion has no established anatomical sigma calibration for 14 non-human keypoints); PCK@0.05 with a bbox-diagonal threshold. ViTPose-S baseline is **honestly under-trained** (15 epochs, `val=train` in `scripts/finalize_v010.py`, 85M params typically need 100+ epochs) — kept as a reference point but not representative of ViTPose capacity. See `reports/metrics_summary.json` for the full numbers.
+OKS computed via pycocotools with uniform `kpt_oks_sigmas=0.05` (CarFusion has no established anatomical sigma calibration for 14 non-human keypoints); PCK@0.05 with a bbox-diagonal threshold. ViTPose-S baseline is **honestly under-trained** (15 epochs, `val=train` in `scripts/finalize_v010.py`, 85M params typically need 100+ epochs) - kept as a reference point but not representative of ViTPose capacity. See `reports/metrics_summary.json` for the full numbers.
 
 ## Visualizations
 
@@ -84,13 +84,13 @@ make serve     # FastAPI on :8000
 
 ## Full Training Commands
 
-**Main — YOLO26-pose:**
+**Main - YOLO26-pose:**
 
 ```bash
 uv run python -m vehicle_keypoints.training.train +experiment=sota trainer.max_epochs=100
 ```
 
-**Baseline — ViTPose-S (top-down, Lightning):**
+**Baseline - ViTPose-S (top-down, Lightning):**
 
 ```bash
 uv run python -m vehicle_keypoints.training.train_vitpose model=baseline trainer.max_epochs=30
@@ -153,4 +153,4 @@ Computer-vision research and education only. CarFusion is small, single-domain, 
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Model weights on HF Hub ship under the same terms; the CarFusion dataset is © CMU and subject to its own research license.
+MIT - see [LICENSE](LICENSE). Model weights on HF Hub ship under the same terms; the CarFusion dataset is © CMU and subject to its own research license.

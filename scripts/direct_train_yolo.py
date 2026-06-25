@@ -1,10 +1,10 @@
-"""Direct Ultralytics training — bypass Hydra + settings.
+"""Direct Ultralytics training - bypass Hydra + settings.
 
 Usage: uv run python -u scripts/direct_train_yolo.py  >> logs/yolo.log 2>&1
 
 Tuned for RTX 3080 10 GB on Windows:
 - workers=0 avoids the Ultralytics multiprocessing hang on Windows.
-- cache=True preloads decoded numpy arrays to disk .npy cache — first epoch slow, rest fast.
+- cache=True preloads decoded numpy arrays to disk .npy cache - first epoch slow, rest fast.
 - imgsz=480 halves FLOPs vs 640 with minimal keypoint quality loss.
 - batch=32 saturates GPU at imgsz=480.
 """

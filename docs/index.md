@@ -2,7 +2,7 @@
 
 <p align="center"><img src="images/banner.jpg" width="100%" alt="vehicle-keypoints - 14-keypoint car pose"/></p>
 
-Production-grade 14-keypoint vehicle pose estimation on the CarFusion (CMU) dataset — four wheels, four head- and tail-lights, four roof corners, the exhaust, and a body-centre reference point per car.
+Production-grade 14-keypoint vehicle pose estimation on the CarFusion (CMU) dataset - four wheels, four head- and tail-lights, four roof corners, the exhaust, and a body-centre reference point per car.
 
 ![CarFusion 14-keypoint skeleton · YOLO26-pose kpt_shape=[14, 3]](images/keypoints_skeleton.svg)
 
@@ -12,8 +12,8 @@ Per-vehicle 2D landmark localisation on RGB images. 14 anatomical keypoints per 
 
 ## Models
 
-- **Main — YOLO26-pose** (Ultralytics 8.x). Anchor-free single-shot detector + keypoint head; non-human-keypoint-friendly, high throughput, standard `.pt` export.
-- **Baseline — ViTPose-S** (HF `transformers` 5.x, Lightning-wrapped). Top-down (crop → heatmap) transformer; pretrained on COCO human 17-kpt, re-headed to 14 car keypoints.
+- **Main - YOLO26-pose** (Ultralytics 8.x). Anchor-free single-shot detector + keypoint head; non-human-keypoint-friendly, high throughput, standard `.pt` export.
+- **Baseline - ViTPose-S** (HF `transformers` 5.x, Lightning-wrapped). Top-down (crop → heatmap) transformer; pretrained on COCO human 17-kpt, re-headed to 14 car keypoints.
 
 ## Stack
 
@@ -21,10 +21,10 @@ Python 3.13 · uv (cu124 torch wheels) · Ultralytics 8.x · transformers 5.x ·
 
 ## Navigation
 
-- [Architecture](architecture.md) — data flow, two-branch pipeline, metric choices
-- [Training](training.md) — YOLO + ViTPose commands, Hydra overrides, GPU notes
-- [Serving](serving.md) — FastAPI `/detect`, Docker, JSON + PNG overlay responses
-- [Model card](model_card.md.j2) — HF Hub card template (Jinja-rendered at publish time)
+- [Architecture](architecture.md) - data flow, two-branch pipeline, metric choices
+- [Training](training.md) - YOLO + ViTPose commands, Hydra overrides, GPU notes
+- [Serving](serving.md) - FastAPI `/detect`, Docker, JSON + PNG overlay responses
+- [Model card](model_card.md.j2) - HF Hub card template (Jinja-rendered at publish time)
 
 ## Links
 
@@ -33,4 +33,4 @@ Python 3.13 · uv (cu124 torch wheels) · Ultralytics 8.x · transformers 5.x ·
 
 ## Intended use
 
-Research and educational artifact demonstrating modern keypoint-detection pipelines on a non-human class. Not intended for any safety-critical, autonomous-driving, or surveillance deployment — the model is trained on a single academic dataset and has not been validated for production use.
+Research and educational artifact demonstrating modern keypoint-detection pipelines on a non-human class. Not intended for any safety-critical, autonomous-driving, or surveillance deployment - the model is trained on a single academic dataset and has not been validated for production use.

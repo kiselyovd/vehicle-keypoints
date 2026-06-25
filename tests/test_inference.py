@@ -13,7 +13,7 @@ from vehicle_keypoints.inference.predict import Detector
 def test_detector_predict_on_sample() -> None:
     sample_img = next(Path("data/sample/images").glob("*.jpg"), None)
     if sample_img is None:
-        pytest.skip("data/sample/images missing — run scripts/build_sample_data.py first")
+        pytest.skip("data/sample/images missing - run scripts/build_sample_data.py first")
     det = Detector.from_pretrained_or_random("yolo26n")
     detections = det.predict(str(sample_img))
     assert isinstance(detections, list)
@@ -27,7 +27,7 @@ def test_detector_predict_on_sample() -> None:
 def test_draw_keypoints_on_sample(tmp_path: Path) -> None:
     sample_img = next(Path("data/sample/images").glob("*.jpg"), None)
     if sample_img is None:
-        pytest.skip("data/sample/images missing — run scripts/build_sample_data.py first")
+        pytest.skip("data/sample/images missing - run scripts/build_sample_data.py first")
     detections = [
         {
             "bbox": [10, 10, 200, 200],

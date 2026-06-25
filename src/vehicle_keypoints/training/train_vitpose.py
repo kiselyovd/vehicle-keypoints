@@ -1,6 +1,6 @@
 """ViTPose baseline training entrypoint (Lightning + Hydra).
 
-Separate from `train.py` — the main YOLO path bypasses Lightning entirely and
+Separate from `train.py` - the main YOLO path bypasses Lightning entirely and
 is handled by Ultralytics' own training loop in train.py.
 """
 

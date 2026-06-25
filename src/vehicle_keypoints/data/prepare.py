@@ -43,7 +43,7 @@ def _coco_to_yolo_row(ann: dict[str, Any], img_w: int, img_h: int) -> str:
         kx, ky, v = kpts[k * 3 : k * 3 + 3]
         v_int = int(v)
         if v_int <= 0:
-            # Non-labeled kpt: emit (0, 0, 0) — YOLO convention.
+            # Non-labeled kpt: emit (0, 0, 0) - YOLO convention.
             parts.append("0.000000")
             parts.append("0.000000")
             parts.append("0")
@@ -90,7 +90,7 @@ def _emit_split(
         if not src.is_file():
             log.warning("image_missing", src=str(src))
             continue
-        # Flatten filename — prefix with scene to avoid collisions across scenes.
+        # Flatten filename - prefix with scene to avoid collisions across scenes.
         flat = f"{_scene_of(img['file_name'])}__{Path(img['file_name']).name}"
         dst_img = img_dir / flat
         shutil.copy2(src, dst_img)
@@ -151,7 +151,7 @@ def prepare_yolo_dataset(
         "test": "images/test",
         "kpt_shape": [NUM_KEYPOINTS, 3],
         "names": {0: CLASS_NAME},
-        # No horizontal-flip symmetry for cars in CarFusion — flip_idx is identity.
+        # No horizontal-flip symmetry for cars in CarFusion - flip_idx is identity.
         "flip_idx": list(range(NUM_KEYPOINTS)),
     }
     (out / "data.yaml").write_text(yaml.safe_dump(data_yaml, sort_keys=False), encoding="utf-8")

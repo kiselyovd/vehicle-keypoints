@@ -6,7 +6,7 @@
 uv run uvicorn vehicle_keypoints.serving.main:app --reload
 ```
 
-The app reads `MODEL_CHECKPOINT` from the environment (default `artifacts/best.pt`) at startup — set it to your trained weights before launching. Without a checkpoint on disk the app still boots but `/detect` returns 503.
+The app reads `MODEL_CHECKPOINT` from the environment (default `artifacts/best.pt`) at startup - set it to your trained weights before launching. Without a checkpoint on disk the app still boots but `/detect` returns 503.
 
 ## Docker
 
@@ -20,18 +20,18 @@ Image: `ghcr.io/kiselyovd/vehicle-keypoints`. The container honours the same `MO
 
 | Method | Path | Description |
 |---|---|---|
-| `GET` | `/health` | Liveness check — returns `{"status": "ok"}` |
+| `GET` | `/health` | Liveness check - returns `{"status": "ok"}` |
 | `POST` | `/detect` | Run keypoint detection on one image |
 | `GET` | `/metrics` | Prometheus metrics (requests, latency, in-flight) |
 
 ## Input format
 
-`POST /detect` takes a multipart upload of a single **RGB JPEG or PNG**, max ~10 MB. The backing YOLO26-pose model resizes to 640×640 internally (letterbox), so you do not need to pre-resize — the returned `image_width` / `image_height` always reflect the original upload dimensions and keypoint coordinates are rescaled back into that original frame.
+`POST /detect` takes a multipart upload of a single **RGB JPEG or PNG**, max ~10 MB. The backing YOLO26-pose model resizes to 640×640 internally (letterbox), so you do not need to pre-resize - the returned `image_width` / `image_height` always reflect the original upload dimensions and keypoint coordinates are rescaled back into that original frame.
 
 ## Headers
 
-- `X-Request-ID` — echoed if the client sends one, otherwise minted server-side; propagate it from your upstream gateway for end-to-end traces.
-- `X-Detections` — present on PNG overlay responses; integer count of detected vehicles in the image.
+- `X-Request-ID` - echoed if the client sends one, otherwise minted server-side; propagate it from your upstream gateway for end-to-end traces.
+- `X-Detections` - present on PNG overlay responses; integer count of detected vehicles in the image.
 
 ## JSON response schema
 
@@ -55,7 +55,7 @@ Default (or when `Accept: application/json`):
 ```
 
 - `bbox` is xywh in the original image frame.
-- `keypoints` is always a list of **14 entries** in the canonical CarFusion order (wheels, head-/tail-lights, exhaust, roof corners, body centre — see `CARFUSION_KEYPOINT_NAMES` in `vehicle_keypoints.inference.overlay`). Missing keypoints carry `v=0` and meaningless `x`/`y`.
+- `keypoints` is always a list of **14 entries** in the canonical CarFusion order (wheels, head-/tail-lights, exhaust, roof corners, body centre - see `CARFUSION_KEYPOINT_NAMES` in `vehicle_keypoints.inference.overlay`). Missing keypoints carry `v=0` and meaningless `x`/`y`.
 - `score` is the per-instance detection confidence.
 
 ## Example curl

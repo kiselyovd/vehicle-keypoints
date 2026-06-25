@@ -29,7 +29,7 @@ class Detector:
 
     @classmethod
     def from_pretrained_or_random(cls, base_name: str = "yolo26n") -> Detector:
-        """Factory used in tests — loads pretrained pose `.pt` if available, else YAML."""
+        """Factory used in tests - loads pretrained pose `.pt` if available, else YAML."""
         from ultralytics import YOLO
 
         for candidate in (f"{base_name}-pose.pt", "yolo11n-pose.pt", f"{base_name}-pose.yaml"):

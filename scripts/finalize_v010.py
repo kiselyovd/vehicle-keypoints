@@ -108,7 +108,7 @@ def vitpose_predict_and_score(vitpose_ckpt: Path) -> Path:
         with torch.inference_mode():
             hm = lit._forward_heatmaps(crop.unsqueeze(0).cuda())
         hm_np = hm.squeeze(0).cpu().numpy()
-        K, H, W = hm_np.shape  # noqa: N806 — ML convention for shape dims
+        K, H, W = hm_np.shape  # noqa: N806 - ML convention for shape dims
         bx, by, bw, bh = ann["bbox"]
         kpts_out = []
         for k in range(K):

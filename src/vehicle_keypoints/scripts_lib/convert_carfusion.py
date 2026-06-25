@@ -4,7 +4,7 @@ Reusable functions (import-friendly for tests); a thin CLI wrapper lives at
 `scripts/convert_carfusion_to_coco.py`.
 
 Input layout (raw CarFusion):
-    raw_dir/<scene>/gt/<video_id>_<frame_id>.txt  — per-frame keypoint rows
+    raw_dir/<scene>/gt/<video_id>_<frame_id>.txt - per-frame keypoint rows
     raw_dir/<scene>/<image_subdir>/<video_id>_<frame_id>.jpg
 
 Each `.txt` row has 5 comma-separated fields:

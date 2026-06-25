@@ -17,7 +17,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 NUM_KEYPOINTS = 14
-DEFAULT_CROP = (256, 192)  # (H, W) — ViTPose canonical
+DEFAULT_CROP = (256, 192)  # (H, W) - ViTPose canonical
 DEFAULT_HEATMAP = (64, 48)  # (H/4, W/4)
 
 
@@ -69,7 +69,7 @@ class CocoKeypointsDataset(Dataset):
         scene_path = self.images_root / fn
         if scene_path.is_file():
             return scene_path
-        # Flat fallback — our data/sample/ uses "<scene>__<stem>.jpg" convention.
+        # Flat fallback - our data/sample/ uses "<scene>__<stem>.jpg" convention.
         from pathlib import PurePosixPath
 
         stem = PurePosixPath(fn).stem

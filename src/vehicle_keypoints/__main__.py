@@ -6,7 +6,7 @@ import sys
 
 
 def main() -> int:
-    print("vehicle-keypoints — use make train / make evaluate / make serve")
+    print("vehicle-keypoints - use make train / make evaluate / make serve")
     return 0
 
 
