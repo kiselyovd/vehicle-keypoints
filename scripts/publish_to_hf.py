@@ -18,12 +18,12 @@ from jinja2 import Environment, FileSystemLoader
 
 
 _METRIC_DISPLAY_NAMES = {
-    "oks_map": ("OKS-mAP", "22.0%"),
-    "oks_map_50": ("OKS-mAP@50", "35.0%"),
+    "oks_map": ("OKS-mAP", "50.4%"),
+    "oks_map_50": ("OKS-mAP@50", "70.4%"),
     "oks_map_75": ("OKS-mAP@75", None),
     "oks_map_medium": ("OKS-mAP (medium)", None),
     "oks_map_large": ("OKS-mAP (large)", None),
-    "pck_0.05": ("PCK@0.05", "49.6%"),
+    "pck_0.05": ("PCK@0.05", "76.1%"),
     "test_size": ("Test images", None),
     "n_predictions": ("Predictions", None),
 }
