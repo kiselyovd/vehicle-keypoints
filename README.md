@@ -9,9 +9,9 @@ Production-grade 14-keypoint vehicle pose estimation on CarFusion — YOLO26-pos
 [![Python 3.12+](https://img.shields.io/badge/Python-3.12%20%7C%203.13-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![HF Model](https://img.shields.io/badge/🤗%20HF%20Hub-model-FFD21E?style=for-the-badge)](https://huggingface.co/kiselyovd/vehicle-keypoints)
 
-End-to-end toolkit for detecting vehicles and regressing **14 anatomical keypoints per car** (wheels, head- and tail-lights, roof corners, exhaust, body centre) on the CarFusion (CMU) dataset. The main model is a single-stage **YOLO26-pose** detector (Ultralytics); the baseline is a top-down **ViTPose-S** wrapped in PyTorch Lightning and fed by a YOLO car detector. The stack is Hydra-configured, trained from the CLI, evaluated with OKS-mAP + PCK@0.05, served over FastAPI + Docker, documented with MkDocs Material, and distributed through the Hugging Face Hub. Research and education only — **not a primary sensor for autonomous driving**.
+<p align="center"><img src="docs/images/banner.jpg" width="100%" alt="vehicle-keypoints - 14-keypoint car pose"/></p>
 
-![vehicle-keypoints hero](docs/images/hero.png)
+End-to-end toolkit for detecting vehicles and regressing **14 anatomical keypoints per car** (wheels, head- and tail-lights, roof corners, exhaust, body centre) on the CarFusion (CMU) dataset. The main model is a single-stage **YOLO26-pose** detector (Ultralytics); the baseline is a top-down **ViTPose-S** wrapped in PyTorch Lightning and fed by a YOLO car detector. The stack is Hydra-configured, trained from the CLI, evaluated with OKS-mAP + PCK@0.05, served over FastAPI + Docker, documented with MkDocs Material, and distributed through the Hugging Face Hub. Research and education only — **not a primary sensor for autonomous driving**.
 
 > **Part of the [kiselyovd ML portfolio](https://github.com/kiselyovd#ml-portfolio)** — production-grade ML projects sharing one [cookiecutter template](https://github.com/kiselyovd/ml-project-template).
 
@@ -29,10 +29,20 @@ Test-set metrics on CarFusion test split (12 761 images, 39 252 predictions):
 
 | Model | OKS-mAP | OKS-mAP50 | PCK@0.05 |
 |---|---|---|---|
-| **YOLO26-pose** (main) | **22.0%** | **35.0%** | **49.6%** |
+| **YOLO26-pose** (main) | **50.4%** | **70.4%** | **76.1%** |
 | ViTPose-S (baseline) | 0.1% | 0.4% | 13.7% |
 
 OKS computed via pycocotools with uniform `kpt_oks_sigmas=0.05` (CarFusion has no established anatomical sigma calibration for 14 non-human keypoints); PCK@0.05 with a bbox-diagonal threshold. ViTPose-S baseline is **honestly under-trained** (15 epochs, `val=train` in `scripts/finalize_v010.py`, 85M params typically need 100+ epochs) — kept as a reference point but not representative of ViTPose capacity. See `reports/metrics_summary.json` for the full numbers.
+
+## Visualizations
+
+14-keypoint CarFusion skeleton (wheels, head- and tail-lights, roof corners, exhaust, body centre):
+
+![CarFusion 14-keypoint skeleton](docs/images/keypoints_skeleton.png)
+
+Flip-augmentation fix - left/right keypoints are correctly swapped under horizontal flip:
+
+![Flip-fix results](docs/images/flipfix_results.png)
 
 ## Monocular 3D pose (PnP) baseline
 

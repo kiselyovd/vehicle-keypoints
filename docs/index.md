@@ -1,6 +1,6 @@
 # vehicle-keypoints
 
-![vehicle-keypoints · YOLO26-pose 14-kpt car detector](images/hero.png)
+<p align="center"><img src="images/banner.jpg" width="100%" alt="vehicle-keypoints - 14-keypoint car pose"/></p>
 
 Production-grade 14-keypoint vehicle pose estimation on the CarFusion (CMU) dataset — four wheels, four head- and tail-lights, four roof corners, the exhaust, and a body-centre reference point per car.
 
