@@ -25,7 +25,7 @@ Resulting image counts: **16,713 train / 3,474 val / 12,761 test**. CarFusion is
 
 ## Results
 
-Test-set metrics on CarFusion test split (12 761 images, 39 252 predictions):
+Test-set metrics on CarFusion test split (12 761 images, 42 706 predictions):
 
 | Model | OKS-mAP | OKS-mAP50 | PCK@0.05 |
 |---|---|---|---|
