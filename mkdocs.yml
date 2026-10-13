@@ -67,7 +67,7 @@ nav:
   - API reference: api.md
 
 extra_css:
-  - assets/showcase/explorer.css
+  - assets/showcase/explorer.css?v=multi-vehicle-2
 extra_javascript:
-  - path: assets/showcase/explorer.js
+  - path: assets/showcase/explorer.js?v=multi-vehicle-2
     type: module

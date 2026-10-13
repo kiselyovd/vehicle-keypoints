@@ -26,6 +26,7 @@
 .sc-check input { accent-color: var(--md-primary-fg-color); }
 .sc-explorer :is(select, input, button, a):focus-visible { outline: 2px solid var(--md-accent-fg-color); outline-offset: 3px; }
 .sc-workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(10rem, .34fr); gap: 1rem; align-items: start; }
+.sc-workspace > .sc-stage { width: 100%; margin: 0; }
 .sc-stage {
   min-width: 0;
   margin: 0;
@@ -47,6 +48,8 @@
 .sc-source { display: inline-block; font-size: .7rem; }
 .sc-skeleton { stroke: var(--md-primary-fg-color); stroke-width: 2; vector-effect: non-scaling-stroke; }
 .sc-box { fill: none; stroke: var(--md-primary-fg-color); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.sc-vehicle-selected .sc-box { stroke-width: 3; }
+.sc-vehicle-number { fill: var(--md-primary-fg-color); stroke: var(--md-default-bg-color); stroke-width: 3; paint-order: stroke; font-weight: 700; }
 .sc-point { fill: var(--md-primary-fg-color); stroke: var(--md-default-bg-color); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .sc-point-soft { fill: var(--md-default-bg-color); stroke: var(--md-primary-fg-color); stroke-dasharray: 3 2; }
 .sc-point-dim { opacity: .25; }

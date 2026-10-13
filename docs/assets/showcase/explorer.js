@@ -1,4 +1,5 @@
 import { assetUrl, checkboxField, element, log, selectField, sourceLink, startShowcase } from './ui.js';
+import { boundsForView, objectsForView } from './geometry.js';
 
 const SVG = 'http://www.w3.org/2000/svg';
 
@@ -17,15 +18,6 @@ function visiblePoint(points, index, prediction) {
   const y = points[index * 3 + 1];
   const flag = points[index * 3 + 2];
   return (prediction ? flag > 0.01 : flag > 0) && (x !== 0 || y !== 0);
-}
-
-function focusedBounds(sample, object, focus) {
-  if (!focus || !object) return [0, 0, sample.width, sample.height];
-  const [x, y, width, height] = object.bbox;
-  const margin = Math.max(width, height) * .3;
-  const left = Math.max(0, x - margin);
-  const top = Math.max(0, y - margin);
-  return [left, top, Math.min(sample.width, x + width + margin) - left, Math.min(sample.height, y + height + margin) - top];
 }
 
 function drawGeometry(svg, object, data, state) {
@@ -51,17 +43,31 @@ function drawGeometry(svg, object, data, state) {
   }
 }
 
-function renderFrame(stage, sample, object, data, state, base) {
+function renderFrame(stage, sample, objects, data, state, base) {
   const layerDescription = state.layer === 'prediction' ? 'recorded prediction' : state.layer === 'photo' ? 'original photo' : 'CarFusion ground-truth annotations';
-  const svg = svgElement('svg', { viewBox: focusedBounds(sample, object, state.focus).join(' '), role: 'img', 'aria-label': `${sample.title}: ${layerDescription}` });
+  const bounds = boundsForView(sample, objects, state.object, state.view);
+  const svg = svgElement('svg', { viewBox: bounds.join(' '), role: 'img', 'aria-label': `${sample.title}: ${layerDescription}` });
+  svg.style.aspectRatio = state.view === 'focus' ? '16 / 10' : '16 / 9';
   svg.append(svgElement('image', { href: assetUrl(sample.image, base), width: sample.width, height: sample.height }));
-  if (state.layer !== 'photo' && object) drawGeometry(svg, object, data, state);
-  const caption = element('figcaption', '', `${sample.title}. ${state.layer === 'prediction' ? 'Recorded CPU prediction from the published checkpoint.' : state.layer === 'photo' ? 'Original committed CarFusion smoke sample.' : 'Original committed CarFusion smoke sample and its dataset annotation.'}`);
+  if (state.layer !== 'photo') {
+    for (const object of objectsForView(objects, state.object, state.view)) {
+      const index = objects.indexOf(object);
+      const group = svgElement('g', { 'data-vehicle': index + 1, class: index === state.object ? 'sc-vehicle-selected' : 'sc-vehicle' });
+      drawGeometry(group, object, data, state);
+      const fontSize = Math.max(18, bounds[2] * .026);
+      const number = svgElement('text', { x: object.bbox[0] + 7, y: object.bbox[1] + fontSize + 4, 'font-size': fontSize, class: 'sc-vehicle-number' });
+      number.textContent = String(index + 1);
+      group.append(number);
+      svg.append(group);
+    }
+  }
+  const caption = element('figcaption', '', `${sample.title}. ${state.layer === 'prediction' ? 'Recorded CPU predictions from the published checkpoint.' : state.layer === 'photo' ? 'Original CarFusion source photo.' : `${sample.annotations.length} vehicles with original CarFusion dataset annotations.`}`);
   stage.replaceChildren(svg, caption);
 }
 
 function describeObject(details, sample, object, data, state) {
-  details.replaceChildren(element('h3', '', state.layer === 'prediction' ? 'Recorded detection' : 'Dataset annotation'));
+  details.replaceChildren(element('h3', '', `${state.layer === 'prediction' ? 'Recorded detection' : 'Dataset annotation'} · vehicle ${state.object + 1}`));
+  if (state.view !== 'focus' && state.layer !== 'photo') details.append(element('p', '', 'All vehicles in this layer are drawn. Numbers match the vehicle selector; the selected box has a thicker outline.'));
   if (!object) { details.append(element('p', '', 'No object was recorded for this layer. Use the full frame or another example.')); return; }
   const labelled = data.keypoints.filter((_, index) => visiblePoint(object.keypoints, index, state.layer === 'prediction')).length;
   details.append(element('p', '', `${labelled} keypoints with coordinates out of 14 slots.`));
@@ -75,7 +81,7 @@ function describeObject(details, sample, object, data, state) {
     } else details.append(element('p', '', 'This point has no labelled coordinates on the selected object.'));
   }
   details.append(sourceLink(data.source));
-  if (data.prediction_provenance) details.append(element('p', '', 'Predictions are recorded examples on smoke samples. The complete test-set benchmark is documented separately.'));
+  if (data.prediction_provenance) details.append(element('p', '', 'These scenes were selected for illustration. The complete test-set benchmark is documented separately.'));
 }
 
 function renderVehicle(root, data, base) {
@@ -83,14 +89,15 @@ function renderVehicle(root, data, base) {
   const stage = root.querySelector('.sc-stage');
   const details = root.querySelector('.sc-details');
   const live = root.querySelector('[role="status"]');
-  const best = data.samples.reduce((winner, sample, index) => sample.annotations[0]?.bbox[2]*sample.annotations[0]?.bbox[3] > data.samples[winner].annotations[0]?.bbox[2]*data.samples[winner].annotations[0]?.bbox[3] ? index : winner, 0);
-  const state = { sample: best, layer: 'annotation', object: 0, point: -1, focus: true, skeleton: true };
-  const sampleField = selectField('Road image', data.samples.map((sample,index)=>[index,sample.title]), 'sample');
+  const preferred = data.samples.findIndex(sample => sample.id === data.default_sample);
+  const best = preferred >= 0 ? preferred : 0;
+  const state = { sample: best, layer: 'annotation', object: 0, point: -1, view: 'all', skeleton: true };
+  const sampleField = selectField('Road image', data.samples.map((sample,index)=>[index,`${sample.title} · ${sample.annotations.length} vehicles`]), 'sample');
   const layerOptions = [['annotation','Dataset annotations'],['photo','Original photo']];
   if (data.prediction_provenance) layerOptions.splice(1,0,['prediction','Recorded model prediction']);
   const layerField = selectField('Layer', layerOptions, 'layer');
   const objectField = selectField('Vehicle', [], 'vehicle');
-  const viewField = selectField('View', [['focus','Selected vehicle'],['frame','Full road frame']], 'view');
+  const viewField = selectField('View', [['all','All vehicles'],['focus','Selected vehicle'],['frame','Full road frame']], 'view');
   const pointField = selectField('Keypoint', [[-1,'All keypoints'], ...data.keypoints.map((point,index)=>[index,point.replaceAll('_',' ')])], 'keypoint');
   const skeletonField = checkboxField('Show skeleton', 'skeleton');
   sampleField.select.value = String(best);
@@ -103,18 +110,18 @@ function renderVehicle(root, data, base) {
       state.object=0;
       objectField.select.replaceChildren(...objects.map((object,index)=>{const option=element('option','',`${index+1} · ${state.layer==='prediction'?'detection':'annotation'} ${object.id || ''}`);option.value=String(index);return option;}));
     }
-    renderFrame(stage,sample,objects[state.object],data,state,base);
+    renderFrame(stage,sample,objects,data,state,base);
     describeObject(details,sample,objects[state.object],data,state);
-    live.textContent=`${objects.length} ${state.layer==='prediction'?'recorded detections':'labelled vehicles'} in this frame.`;
-    log('vehicle:update',{sample:sample.id,layer:state.layer,object:state.object,point:state.point});
+    live.textContent=`${objects.length} ${state.layer==='prediction'?'recorded detections':'labelled vehicles'} in this frame. ${state.layer === 'photo' ? 'Original photo without overlays.' : state.view === 'focus' ? 'Showing the selected vehicle.' : 'Showing all vehicles in this layer.'}`;
+    log('vehicle:update',{sample:sample.id,layer:state.layer,object:state.object,point:state.point,view:state.view,drawn:state.layer === 'photo' ? 0 : objectsForView(objects,state.object,state.view).length});
   };
   sampleField.select.addEventListener('change',()=>{state.sample=Number(sampleField.select.value);update(true);});
   layerField.select.addEventListener('change',()=>{state.layer=layerField.select.value;update(true);});
   objectField.select.addEventListener('change',()=>{state.object=Number(objectField.select.value);update();});
-  viewField.select.addEventListener('change',()=>{state.focus=viewField.select.value==='focus';update();});
+  viewField.select.addEventListener('change',()=>{state.view=viewField.select.value;update();});
   pointField.select.addEventListener('change',()=>{state.point=Number(pointField.select.value);update();});
   skeletonField.input.addEventListener('change',()=>{state.skeleton=skeletonField.input.checked;update();});
   update(true);
 }
 
-startShowcase('vehicle',renderVehicle,new URL('./data.json',import.meta.url));
+startShowcase('vehicle',renderVehicle,new URL('./data.json?v=multi-vehicle-2',import.meta.url));

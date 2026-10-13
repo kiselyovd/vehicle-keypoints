@@ -62,7 +62,7 @@ class ShowcaseTests(unittest.TestCase):
                 any(
                     tag == "script"
                     and a.get("type") == "module"
-                    and a.get("src", "").endswith("showcase/explorer.js")
+                    and urlsplit(a.get("src", "")).path.endswith("showcase/explorer.js")
                     for tag, a in nodes
                 )
             )
@@ -86,23 +86,23 @@ class ShowcaseTests(unittest.TestCase):
                     self.assertTrue(target.exists(), f"{html.name}: {tag} {value}")
 
     def test_annotations_and_recorded_prediction_provenance(self):
-        coco = json.loads((ROOT / "data/sample/annotations.json").read_text(encoding="utf-8"))
-        schema = coco["categories"][0]
-        self.assertEqual(DATA["keypoints"], schema["keypoints"])
-        self.assertEqual(DATA["skeleton"], schema["skeleton"])
+        source = json.loads((ASSETS / "source-records.json").read_text(encoding="utf-8"))
+        self.assertEqual(DATA["keypoints"], source["keypoints"])
+        self.assertEqual(DATA["skeleton"], source["skeleton"])
         self.assertEqual(len(DATA["keypoints"]), 14)
         self.assertTrue(all(0 <= i < 14 for edge in DATA["skeleton"] for i in edge))
-        self.assertEqual(len(DATA["samples"]), len(coco["images"]))
-        original = {a["id"]: a for a in coco["annotations"]}
+        self.assertEqual(len(DATA["samples"]), len(source["records"]))
+        records = {record["image"]["id"]: record for record in source["records"]}
         for sample in DATA["samples"]:
             image = ASSETS / sample["image"]
-            self.assertEqual(hashlib.sha256(image.read_bytes()).hexdigest(), sample["image_sha256"])
-            self.assertEqual(
-                image.read_bytes(), (ROOT / "data/sample/images" / image.name).read_bytes()
-            )
+            record = records[sample["id"]]
+            self.assertEqual(hashlib.sha256(image.read_bytes()).hexdigest(), record["image_sha256"])
+            self.assertEqual(sample["image_sha256"], record["image_sha256"])
+            originals = {item["id"]: item for item in record["annotations"]}
+            self.assertEqual(len(sample["annotations"]), len(originals))
             for annotation in sample["annotations"]:
-                self.assertEqual(annotation["bbox"], original[annotation["id"]]["bbox"])
-                self.assertEqual(annotation["keypoints"], original[annotation["id"]]["keypoints"])
+                self.assertEqual(annotation["bbox"], originals[annotation["id"]]["bbox"])
+                self.assertEqual(annotation["keypoints"], originals[annotation["id"]]["keypoints"])
             for prediction in sample["predictions"]:
                 self.assertEqual(len(prediction["keypoints"]), 42)
                 self.assertTrue(0 <= prediction["score"] <= 1)
@@ -111,4 +111,15 @@ class ShowcaseTests(unittest.TestCase):
         self.assertEqual(provenance["model"], "kiselyovd/vehicle-keypoints")
         self.assertEqual(len(provenance["revision"]), 40)
         self.assertEqual(len(provenance["weights_sha256"]), 64)
-        self.assertIn("not the full evaluation split", provenance["dataset_partition"])
+        self.assertIn("not a benchmark", provenance["dataset_partition"])
+
+    def test_showcase_scenes_contain_several_well_labelled_vehicles(self):
+        for sample in DATA["samples"]:
+            with self.subTest(scene=sample["title"]):
+                well_labelled = [
+                    item
+                    for item in sample["annotations"]
+                    if sum(v > 0 for v in item["keypoints"][2::3]) >= 10
+                ]
+                self.assertGreaterEqual(len(well_labelled), 3)
+                self.assertGreaterEqual(len(sample["predictions"]), 3)
