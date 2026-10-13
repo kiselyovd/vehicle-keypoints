@@ -1,156 +1,57 @@
-# vehicle-keypoints
+# Vehicle Keypoints
 
-Production-grade 14-keypoint vehicle pose estimation on CarFusion - YOLO26-pose (main) + ViTPose-S (baseline).
+Detect 14 vehicle keypoints in road images, evaluate pose quality, and explore monocular 3D reconstruction and synthetic-data transfer.
 
-[![CI](https://img.shields.io/github/actions/workflow/status/kiselyovd/vehicle-keypoints/ci.yml?branch=main&label=CI&style=for-the-badge&logo=github)](https://github.com/kiselyovd/vehicle-keypoints/actions/workflows/ci.yml)
-[![Docs](https://img.shields.io/badge/docs-mkdocs-526CFE?style=for-the-badge&logo=materialformkdocs&logoColor=white)](https://kiselyovd.github.io/vehicle-keypoints/)
-[![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kiselyovd/vehicle-keypoints/badges/coverage.json&style=for-the-badge&logo=pytest&logoColor=white)](https://github.com/kiselyovd/vehicle-keypoints/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
-[![Python 3.12+](https://img.shields.io/badge/Python-3.12%20%7C%203.13-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![HF Model](https://img.shields.io/badge/🤗%20HF%20Hub-model-FFD21E?style=for-the-badge)](https://huggingface.co/kiselyovd/vehicle-keypoints)
+[![CI](https://github.com/kiselyovd/vehicle-keypoints/actions/workflows/ci.yml/badge.svg)](https://github.com/kiselyovd/vehicle-keypoints/actions/workflows/ci.yml) [![Docs](https://img.shields.io/badge/docs-MkDocs-blue)](https://kiselyovd.github.io/vehicle-keypoints/) [![HF Model](https://img.shields.io/badge/Hugging_Face-model-yellow)](https://huggingface.co/kiselyovd/vehicle-keypoints) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
-<p align="center"><img src="docs/images/banner.jpg" width="100%" alt="vehicle-keypoints - 14-keypoint car pose"/></p>
+YOLO26-pose is the main detector; ViTPose-S is an under-trained reference baseline. The project includes scene-level data preparation, evaluation, FastAPI serving, and published weights.
 
-End-to-end toolkit for detecting vehicles and regressing **14 anatomical keypoints per car** (wheels, head- and tail-lights, roof corners, exhaust, body centre) on the CarFusion (CMU) dataset. The main model is a single-stage **YOLO26-pose** detector (Ultralytics); the baseline is a top-down **ViTPose-S** wrapped in PyTorch Lightning and fed by a YOLO car detector. The stack is Hydra-configured, trained from the CLI, evaluated with OKS-mAP + PCK@0.05, served over FastAPI + Docker, documented with MkDocs Material, and distributed through the Hugging Face Hub. Research and education only - **not a primary sensor for autonomous driving**.
+![Monocular 3D pose wireframe projected onto a real ApolloCar3D image](docs/images/pose3d_overlay.png)
 
-> **Part of the [kiselyovd ML portfolio](https://github.com/kiselyovd#ml-portfolio)** - production-grade ML projects sharing one [cookiecutter template](https://github.com/kiselyovd/ml-project-template).
+*Example from the geometric PnP baseline. Its evaluation uses a different dataset from the 2D detector; see the [3D protocol and limitations](docs/usage-guide.md#monocular-3d-pose-pnp-baseline).*
 
-📖 [English docs](https://kiselyovd.github.io/vehicle-keypoints/) • 🇷🇺 [Русский README](README.ru.md) • 🤗 [HF Hub model](https://huggingface.co/kiselyovd/vehicle-keypoints)
+[Model & weights](https://huggingface.co/kiselyovd/vehicle-keypoints) · [Documentation](https://kiselyovd.github.io/vehicle-keypoints/) · [Русский README](README.ru.md)
 
-## Dataset
+## Try the detector
 
-[CarFusion](http://www.cs.cmu.edu/~mvo/index_files/CarFusion.html) - a multi-view traffic-scene dataset from Carnegie Mellon University (Dinesh Reddy, Minh Vo, and Srinivasa Narasimhan, CVPR 2018) with **14 keypoint annotations per car**. The raw release is pre-converted to COCO-keypoints JSON via `scripts/convert_carfusion_to_coco.py`, and `src/vehicle_keypoints/data/prepare.py` applies a **scene-level 90/10 split** across the 8 training scenes (val = `car_craig2`, the other 7 go to train) so no scene appears in more than one partition.
+Requires Python 3.13+ and [uv](https://docs.astral.sh/uv/). From the repository root:
 
-Resulting image counts: **16,713 train / 3,474 val / 12,761 test**. CarFusion is © CMU and released under its own research-only license.
-
-## Results
-
-Test-set metrics on CarFusion test split (12 761 images, 42 706 predictions):
-
-| Model | OKS-mAP | OKS-mAP50 | PCK@0.05 |
-|---|---|---|---|
-| **YOLO26-pose** (main) | **50.4%** | **70.4%** | **76.1%** |
-| ViTPose-S (baseline) | 0.1% | 0.4% | 13.7% |
-
-OKS computed via pycocotools with uniform `kpt_oks_sigmas=0.05` (CarFusion has no established anatomical sigma calibration for 14 non-human keypoints); PCK@0.05 with a bbox-diagonal threshold. ViTPose-S baseline is **honestly under-trained** (15 epochs, `val=train` in `scripts/finalize_v010.py`, 85M params typically need 100+ epochs) - kept as a reference point but not representative of ViTPose capacity. See `reports/metrics_summary.json` for the full numbers.
-
-## Visualizations
-
-14-keypoint CarFusion skeleton (wheels, head- and tail-lights, roof corners, exhaust, body centre):
-
-![CarFusion 14-keypoint skeleton](docs/images/keypoints_skeleton.png)
-
-Flip-augmentation fix - left/right keypoints are correctly swapped under horizontal flip:
-
-![Flip-fix results](docs/images/flipfix_results.png)
-
-## Monocular 3D pose (PnP) baseline
-
-The 14 keypoints lift to a full **6DoF vehicle pose** by solving PnP (`cv2.solvePnPRansac`) against a single rigid metric car wireframe - the first 14 points of the [ue5-vehicle-synth](https://github.com/kiselyovd/ue5-vehicle-synth) 24-point schema. We run the CarFusion detector on the real [ApolloCar3D](http://apolloscape.auto/car_instance.html) validation split (272 frames) and compare the monocular PnP pose against ApolloCar3D's 3D ground-truth car poses:
-
-| Metric | Value |
-|---|---|
-| Rotation error, median | **13.6°** |
-| Rotation error, mean | 51.6° |
-| Translation error, median | 3.13 m |
-| Cars within 10° rotation | 37.8% |
-| Cars within 2 m translation | 35.7% |
-| Matched cars / detector hit-rate | 230 / 25.1% |
-
-![3D pose overlay](docs/images/pose3d_overlay.png)
-
-Honest caveats: this is a **single mean-sedan wireframe** (real cars vary in size and shape, an intrinsic error source), and the detector is trained on **CarFusion** then evaluated on **ApolloCar3D** - a real domain shift, which is why the hit-rate is 25% (ApolloCar3D also labels every distant and parked car). The model-to-Apollo frame alignment is a fixed rotation calibrated by SO(3) rotation averaging over matched cars (median rotation error 109° -> 16° on the calibration subset). The high rotation mean is the tail of PnP front/back flip ambiguities. This rigid-PnP baseline is the geometric foundation for the next milestone - a trainable, shape-aware monocular 3D model. Reproduce with `uv run python scripts/eval_pose3d.py`; numbers in `reports/pose3d_apollo.json`.
-
-3D ground truth from the [ApolloScape 3D Car Instance](http://apolloscape.auto/car_instance.html) dataset (the ApolloCar3D benchmark, Song et al., CVPR 2019) - 79 CAD car types with per-car 6DoF poses and `RIEGL-CS6` camera intrinsics; research-only license. We use only its 3D pose ground truth, not the CAD shapes.
-
-## Synthetic data: ue5-vehicle-synth
-
-The 24-point schema and synthetic training data come from the sister project [`ue5-vehicle-synth`](https://github.com/kiselyovd/ue5-vehicle-synth), which generates keypoint-labeled vehicle frames inside Epic's City Sample (Unreal Engine 5).
-
-![ue5-vehicle-synth demo: a car drives, gains its 24-point keypoint skeleton, then drives on as a wireframe ghost](https://raw.githubusercontent.com/kiselyovd/ue5-vehicle-synth/main/docs/videos/demo-hero.gif)
-
-> Demo: each scene is a single vehicle driving normally, then with its 24-point keypoint skeleton, then as a wireframe ghost. Full video and pipeline at [`ue5-vehicle-synth`](https://github.com/kiselyovd/ue5-vehicle-synth).
-
-## Quick Start
+Download the weights, then run inference:
 
 ```bash
 uv sync --all-groups
-bash scripts/sync_data.sh "D:/ProjectsData/Car Key Point/datasets/carfusion"
-uv run python -m vehicle_keypoints.data.prepare --raw data/raw --out data/processed
-make train     # main YOLO26-pose (~90 min RTX 3080)
-make evaluate  # OKS-mAP + PCK on test
-make serve     # FastAPI on :8000
+uv run python -c "from huggingface_hub import hf_hub_download; print(hf_hub_download('kiselyovd/vehicle-keypoints', 'weights.pt', local_dir='artifacts/hf'))"
+uv run python -m vehicle_keypoints.inference.predict \
+  --checkpoint artifacts/hf/weights.pt --input data/sample/images/car_butler1__16_04881.jpg
 ```
 
-## Full Training Commands
+This runs inference on a bundled CarFusion sample. Output is JSON with boxes, confidence scores, and 14 `(x, y, visibility)` keypoints per detection. Boxes use `(x, y, width, height)`.
 
-**Main - YOLO26-pose:**
+## Results and research
 
-```bash
-uv run python -m vehicle_keypoints.training.train +experiment=sota trainer.max_epochs=100
-```
+Reported **2D** metrics on the CarFusion test split: **12,761 images**, OKS sigmas `0.05`, PCK threshold `0.05` of the box diagonal.
 
-**Baseline - ViTPose-S (top-down, Lightning):**
+| Model | OKS-mAP | OKS-mAP50 | PCK@0.05 |
+|---|---|---|---|
+| YOLO26-pose | 50.4% | 70.4% | 76.1% |
+| ViTPose-S reference | 0.1% | 0.4% | 13.7% |
 
-```bash
-uv run python -m vehicle_keypoints.training.train_vitpose model=baseline trainer.max_epochs=30
-```
+See [stored metrics](reports/metrics_summary.json) and the [evaluation notes](docs/usage-guide.md#results). The ViTPose run used 15 epochs and `val=train`; these numbers do not establish a fair comparison of architecture capacity.
 
-## Inference
+The [UE5 pipeline](https://github.com/kiselyovd/ue5-vehicle-synth) supplies synthetic frames and a compatible 24-point schema. In the published matched experiments, adding synthetic data reduced real-data OKS-mAP by **1.7 pp** from the weak checkpoint and **9.5 pp** from the strong checkpoint. The **+2 pp** acceptance criterion was not met. The [experiment report](docs/phase0/synthetic-pretraining.md) separates this result from the much larger gain caused by correcting horizontal-flip labels.
 
-```python
-from huggingface_hub import hf_hub_download
-from vehicle_keypoints.inference.predict import Detector
+## Documentation
 
-ckpt = hf_hub_download(repo_id="kiselyovd/vehicle-keypoints", filename="weights.pt")
-det = Detector.from_checkpoint(ckpt)
-detections = det.predict("car.jpg")
-for d in detections:
-    print(d["bbox"], d["score"], len(d["keypoints"]))
-```
+| Guide | Covers |
+|---|---|
+| [Usage and evaluation](docs/usage-guide.md) | Dataset, training commands, Python API, 3D pose, and evaluation caveats |
+| [Architecture](docs/architecture.md) | Components and data flow |
+| [Training](docs/training.md) | Detector and baseline recipes |
+| [Serving](docs/serving.md) | FastAPI and Docker |
+| [Synthetic-data experiment](docs/phase0/synthetic-pretraining.md) | Matched ablations, negative results, and follow-up hypotheses |
 
-Each detection is a dict with an xyxy `bbox`, a detector `score`, and a list of 14 `(x, y, visibility)` keypoints aligned to the CarFusion skeleton.
+## Limitations and licenses
 
-## Serving
+Research and education use. CarFusion is a limited traffic-scene dataset, and the 3D baseline has substantial domain shift and limited detector coverage.
 
-```bash
-docker compose up api
-```
-
-JSON response (keypoints + boxes):
-
-```bash
-curl -X POST -F file=@car.jpg http://localhost:8000/detect
-```
-
-Overlay PNG (skeleton drawn on the input image):
-
-```bash
-curl -X POST -F file=@car.jpg "http://localhost:8000/detect?overlay=true" -o overlay.png
-```
-
-## Project Structure
-
-```
-vehicle-keypoints/
-├── configs/              # Hydra
-├── data/                 # raw + processed + sample (CI)
-├── docs/                 # MkDocs Material
-├── scripts/              # convert_carfusion_to_coco.py, build_sample_data.py, publish_to_hf.py, ...
-├── src/vehicle_keypoints/
-│   ├── data/             # prepare.py, coco_dataset.py, datamodule.py
-│   ├── models/           # factory.py, vitpose.py, lightning_module.py
-│   ├── training/         # train.py (YOLO), train_vitpose.py (Lightning)
-│   ├── evaluation/       # evaluate.py (OKS-mAP + PCK)
-│   ├── inference/        # predict.py, overlay.py
-│   └── serving/          # FastAPI /detect
-└── tests/
-```
-
-## Intended Use
-
-Computer-vision research and education only. CarFusion is small, single-domain, and not representative of all driving conditions. **Not suitable as a primary sensor for autonomous driving; not safety-certified.**
-
-## License
-
-MIT - see [LICENSE](LICENSE). Model weights on HF Hub ship under the same terms; the CarFusion dataset is © CMU and subject to its own research license.
+Repository code is [MIT](LICENSE). CarFusion, ApolloCar3D, Ultralytics, and published model artifacts have separate terms; consult their licenses and model cards before reuse.

@@ -58,6 +58,7 @@ markdown_extensions:
   - tables
 nav:
   - Home: index.md
+  - Usage and evaluation: usage-guide.md
   - Architecture: architecture.md
   - Training: training.md
   - Serving: serving.md
