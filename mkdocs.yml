@@ -58,12 +58,16 @@ markdown_extensions:
   - tables
 nav:
   - Home: index.md
+  - Showcase: showcase.md
   - Usage and evaluation: usage-guide.md
   - Architecture: architecture.md
   - Training: training.md
   - Serving: serving.md
-  - Benchmarks: BENCHMARKS.md
-  - Reproducibility: REPRODUCIBILITY.md
-  - Limitations: LIMITATIONS.md
   - Synthetic pre-training: phase0/synthetic-pretraining.md
   - API reference: api.md
+
+extra_css:
+  - assets/showcase/explorer.css
+extra_javascript:
+  - path: assets/showcase/explorer.js
+    type: module

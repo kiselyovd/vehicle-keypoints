@@ -1,5 +1,7 @@
 # Vehicle Keypoints
 
+[Open the interactive showcase](showcase.md)
+
 ![Monocular 3D pose wireframe on an ApolloCar3D image](images/pose3d_overlay.png)
 
 *An example from the geometric PnP baseline; see the [protocol and limitations](usage-guide.md#monocular-3d-pose-pnp-baseline).*

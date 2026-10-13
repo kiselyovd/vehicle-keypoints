@@ -1,4 +1,4 @@
-[Back to README](../README.md) · [Architecture →](architecture.md)
+[Back to README](https://github.com/kiselyovd/vehicle-keypoints/blob/main/README.md) · [Architecture →](architecture.md)
 
 # Usage and evaluation guide
 
@@ -138,7 +138,7 @@ Computer-vision research and education only. CarFusion is small, single-domain, 
 
 ## License
 
-Repository code is [MIT](../LICENSE). CarFusion and ApolloCar3D have their own research-use terms. The Ultralytics dependency and model artifacts have separate licensing terms; review those alongside the model card before reuse.
+Repository code is [MIT](https://github.com/kiselyovd/vehicle-keypoints/blob/main/LICENSE). CarFusion and ApolloCar3D have their own research-use terms. The Ultralytics dependency and model artifacts have separate licensing terms; review those alongside the model card before reuse.
 
 ## See also
 
