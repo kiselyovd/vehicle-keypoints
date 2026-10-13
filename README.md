@@ -25,7 +25,7 @@ uv run python -m vehicle_keypoints.inference.predict \
   --checkpoint artifacts/hf/weights.pt --input data/sample/images/car_butler1__16_04881.jpg
 ```
 
-This runs inference on a bundled CarFusion sample. Output is JSON with boxes, confidence scores, and 14 `(x, y, visibility)` keypoints per detection. Boxes use `(x, y, width, height)`.
+This runs inference on a bundled CarFusion sample. Output is JSON with boxes, confidence scores, and 14 `(x, y, score)` keypoints per detection. Boxes use `(x, y, width, height)`.
 
 ## Results and research
 

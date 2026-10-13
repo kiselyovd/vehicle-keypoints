@@ -5,6 +5,7 @@ Requires the existing docs dependency group, without importing the ML runtime.
 """
 
 import hashlib
+import importlib.util
 import json
 import subprocess
 import sys
@@ -34,6 +35,10 @@ class Elements(HTMLParser):
 class ShowcaseTests(unittest.TestCase):
     """Exercise the real MkDocs root and the data displayed by its UI."""
 
+    @unittest.skipUnless(
+        importlib.util.find_spec("mkdocs"),
+        "Requires the docs dependency group; exercised by the Docs workflow.",
+    )
     def test_production_root_and_local_assets(self):
         with tempfile.TemporaryDirectory() as directory:
             site = Path(directory)

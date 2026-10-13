@@ -94,7 +94,7 @@ for d in detections:
     print(d["bbox"], d["score"], len(d["keypoints"]))
 ```
 
-Each detection is a dict with an `(x, y, width, height)` `bbox`, a detector `score`, and a list of 14 `(x, y, visibility)` keypoints aligned to the CarFusion skeleton.
+Each detection is a dict with an `(x, y, width, height)` `bbox`, a detector `score`, and a list of 14 `(x, y, score)` keypoints aligned to the CarFusion skeleton.
 
 ## Serving
 
