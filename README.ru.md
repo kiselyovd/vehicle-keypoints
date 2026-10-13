@@ -1,5 +1,7 @@
 # vehicle-keypoints
 
+[Интерактивная витрина проекта](https://kiselyovd.github.io/vehicle-keypoints/showcase/)
+
 Production-уровневая оценка позы автомобиля по 14 ключевым точкам на CarFusion - YOLO26-pose (основная) + ViTPose-S (baseline).
 
 [![CI](https://img.shields.io/github/actions/workflow/status/kiselyovd/vehicle-keypoints/ci.yml?branch=main&label=CI&style=for-the-badge&logo=github)](https://github.com/kiselyovd/vehicle-keypoints/actions/workflows/ci.yml)

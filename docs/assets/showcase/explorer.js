@@ -23,7 +23,9 @@ function focusedBounds(sample, object, focus) {
   if (!focus || !object) return [0, 0, sample.width, sample.height];
   const [x, y, width, height] = object.bbox;
   const margin = Math.max(width, height) * .3;
-  return [Math.max(0, x - margin), Math.max(0, y - margin), Math.min(sample.width, width + margin * 2), Math.min(sample.height, height + margin * 2)];
+  const left = Math.max(0, x - margin);
+  const top = Math.max(0, y - margin);
+  return [left, top, Math.min(sample.width, x + width + margin) - left, Math.min(sample.height, y + height + margin) - top];
 }
 
 function drawGeometry(svg, object, data, state) {
@@ -50,10 +52,11 @@ function drawGeometry(svg, object, data, state) {
 }
 
 function renderFrame(stage, sample, object, data, state, base) {
-  const svg = svgElement('svg', { viewBox: focusedBounds(sample, object, state.focus).join(' '), role: 'img', 'aria-label': `${sample.title}: ${state.layer === 'prediction' ? 'recorded prediction' : 'CarFusion ground-truth annotations'}` });
+  const layerDescription = state.layer === 'prediction' ? 'recorded prediction' : state.layer === 'photo' ? 'original photo' : 'CarFusion ground-truth annotations';
+  const svg = svgElement('svg', { viewBox: focusedBounds(sample, object, state.focus).join(' '), role: 'img', 'aria-label': `${sample.title}: ${layerDescription}` });
   svg.append(svgElement('image', { href: assetUrl(sample.image, base), width: sample.width, height: sample.height }));
   if (state.layer !== 'photo' && object) drawGeometry(svg, object, data, state);
-  const caption = element('figcaption', '', `${sample.title}. ${state.layer === 'prediction' ? 'Recorded CPU prediction from the published checkpoint.' : 'Original committed CarFusion smoke sample and its dataset annotation.'}`);
+  const caption = element('figcaption', '', `${sample.title}. ${state.layer === 'prediction' ? 'Recorded CPU prediction from the published checkpoint.' : state.layer === 'photo' ? 'Original committed CarFusion smoke sample.' : 'Original committed CarFusion smoke sample and its dataset annotation.'}`);
   stage.replaceChildren(svg, caption);
 }
 

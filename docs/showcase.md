@@ -26,7 +26,6 @@ CarFusion retains its own research-use terms. The UI does not alter the original
 
 The explorer uses published artifacts from [kiselyovd/vehicle-keypoints](https://github.com/kiselyovd/vehicle-keypoints). [Inspect the pinned source](https://github.com/kiselyovd/vehicle-keypoints/blob/f057d0d9f17720a876dd31dece585d08c2e58e02/data/sample/annotations.json) and the [structured showcase data](assets/showcase/data.json).
 
-UI state stays in the current page. Detailed diagnostic events can be enabled with `?debug=1`; they contain selected IDs and modes, not sample content.
 
 ## See also
 
