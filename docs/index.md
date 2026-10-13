@@ -1,10 +1,18 @@
-# vehicle-keypoints
+# Vehicle Keypoints
 
-<p align="center"><img src="images/banner.jpg" width="100%" alt="vehicle-keypoints - 14-keypoint car pose"/></p>
+![Monocular 3D pose wireframe on an ApolloCar3D image](images/pose3d_overlay.png)
 
-Production-grade 14-keypoint vehicle pose estimation on the CarFusion (CMU) dataset - four wheels, four head- and tail-lights, four roof corners, the exhaust, and a body-centre reference point per car.
+*An example from the geometric PnP baseline; see the [protocol and limitations](usage-guide.md#monocular-3d-pose-pnp-baseline).*
+
+Research toolkit for 14-keypoint vehicle pose estimation on the CarFusion (CMU) dataset - four wheels, four head- and tail-lights, four roof corners, the exhaust, and a body-centre reference point per car.
 
 ![CarFusion 14-keypoint skeleton · YOLO26-pose kpt_shape=[14, 3]](images/keypoints_skeleton.svg)
+
+## Results and research
+
+The main detector's published CarFusion evaluation and baseline caveats are documented in the [usage and evaluation guide](usage-guide.md#results). The 3D reconstruction example uses ApolloCar3D and has a separate evaluation protocol.
+
+The [synthetic-data experiment](phase0/synthetic-pretraining.md) is complete: the tested synthetic supplement did not meet the **+2 pp OKS-mAP** criterion. Its contribution was **-1.7 pp** from the weak checkpoint and **-9.5 pp** from the strong one. The report distinguishes this negative result from the gain caused by correcting horizontal-flip keypoint labels.
 
 ## Task
 
@@ -21,6 +29,8 @@ Python 3.13 · uv (cu124 torch wheels) · Ultralytics 8.x · transformers 5.x ·
 
 ## Navigation
 
+- [Usage and evaluation](usage-guide.md) - quick start, dataset, API examples, 2D and 3D protocols
+- [Synthetic-data experiment](phase0/synthetic-pretraining.md) - matched ablations and error analysis
 - [Architecture](architecture.md) - data flow, two-branch pipeline, metric choices
 - [Training](training.md) - YOLO + ViTPose commands, Hydra overrides, GPU notes
 - [Serving](serving.md) - FastAPI `/detect`, Docker, JSON + PNG overlay responses
