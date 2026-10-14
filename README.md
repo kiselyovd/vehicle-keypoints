@@ -12,6 +12,8 @@ YOLO26-pose is the main detector; ViTPose-S is an under-trained reference baseli
 
 [Model & weights](https://huggingface.co/kiselyovd/vehicle-keypoints) · [Documentation](https://kiselyovd.github.io/vehicle-keypoints/) · [Русский README](README.ru.md)
 
+**[Run live inference](https://huggingface.co/spaces/kiselyovd/vehicle-keypoints-demo)** on your own image. The Space uses the published real-data checkpoint; the explorer above uses original annotations and recorded outputs.
+
 ## Try the detector
 
 Requires Python 3.13+ and [uv](https://docs.astral.sh/uv/). From the repository root:

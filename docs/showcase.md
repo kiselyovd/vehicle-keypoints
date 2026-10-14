@@ -1,5 +1,7 @@
 # Vehicle Keypoints
 
+[Run the model on your own image](https://huggingface.co/spaces/kiselyovd/vehicle-keypoints-demo) · [Source-code and reproducible commands](https://github.com/kiselyovd/vehicle-keypoints)
+
 Explore real CarFusion annotations and recorded predictions from the published YOLO checkpoint. Start with every labelled vehicle in a scene, then select a car or an individual landmark.
 
 <section class="sc-explorer" data-showcase="vehicle" data-owner="kiselyovd" aria-label="Vehicle Keypoints interactive showcase">
@@ -36,3 +38,7 @@ The explorer uses published artifacts from [kiselyovd/vehicle-keypoints](https:/
 - [Project overview](index.md)
 - [Architecture](architecture.md)
 - [Source repository](https://github.com/kiselyovd/vehicle-keypoints)
+
+## Difficult overlap example
+
+The [live Space](https://huggingface.co/spaces/kiselyovd/vehicle-keypoints-demo) includes `car_fifth2 / 7_06521`: three dataset-labelled vehicles with overlapping silhouettes. In the pinned CPU replay only the foreground car has a returned box; the two vehicles behind it are missed. Inspect the source/prediction pair, rather than treating the curated example as an aggregate failure rate.
