@@ -69,6 +69,7 @@ nav:
   - API reference: api.md
 
 extra_css:
+  - assets/accessibility.css?v=20261015-a11y
   - assets/showcase/explorer.css?v=multi-vehicle-2
 extra_javascript:
   - path: assets/showcase/explorer.js?v=multi-vehicle-2
