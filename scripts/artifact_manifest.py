@@ -134,6 +134,22 @@ def render(manifest: dict[str, Any], values: dict[str, float]) -> str:
     return "\n".join(lines)
 
 
+def render_overview(manifest: dict[str, Any], values: dict[str, float]) -> str:
+    """Render the first-fold result from the same checked numerical source."""
+    evaluation = manifest["evaluation"]
+    scores = " · ".join(f"{key} **{value:.2%}**" for key, value in list(values.items())[:2])
+    report = f"https://github.com/kiselyovd/{manifest['project']}/blob/main/{evaluation['report']}"
+    return "\n".join(
+        [
+            "<!-- ARTIFACT-OVERVIEW:START -->",
+            f"{scores}. [Evaluation and scope]({report}).",
+            "",
+            f"**Evidence:** {evaluation['label']}. {evaluation['scope']}",
+            "<!-- ARTIFACT-OVERVIEW:END -->",
+        ]
+    )
+
+
 def verify_hub(manifest: dict[str, Any]) -> None:
     """Compare immutable Hub file metadata checksums without downloading model stores."""
     hub = manifest["hub"]
@@ -190,6 +206,11 @@ def main() -> None:
     if len(re.findall(pattern, text, flags=re.S)) != 1:
         raise ValueError("README must contain exactly one artifact manifest block")
     updated = re.sub(pattern, lambda _: render(manifest, values), text, flags=re.S)
+    overview = r"<!-- ARTIFACT-OVERVIEW:START -->.*?<!-- ARTIFACT-OVERVIEW:END -->"
+    if "<!-- ARTIFACT-OVERVIEW:" in text:
+        if len(re.findall(overview, text, flags=re.S)) != 1:
+            raise ValueError("README must contain exactly one overview block")
+        updated = re.sub(overview, lambda _: render_overview(manifest, values), updated, flags=re.S)
     if args.write:
         readme.write_text(updated, encoding="utf-8", newline="\n")
     elif updated != text:

@@ -1,0 +1,24 @@
+{
+  "asset": "docs/images/social-preview.png",
+  "sha256": "8a3e64f1946edd513df6c6193fd34f94cd14e1ad8f982f00b89e26764d3eaadc",
+  "width": 1280,
+  "height": 640,
+  "bytes": 734617,
+  "kind": "project evidence composition; no generated model output",
+  "note": "Curated illustrations; source CarFusion frames and recorded predictions, not a benchmark",
+  "sources": [
+    {
+      "path": "docs\\assets\\showcase\\data.json",
+      "sha256": "55a13fbc15ddce45eeda2a5f2def2f6fc3d2624e26cfd3b5559a23a30b088cdb"
+    },
+    {
+      "path": "docs\\assets\\showcase\\scenes\\car_butler1__16_00721.jpg",
+      "sha256": "00a3724e5225a664221b4fa23219d3441ae9f9cdf46977365f4c81d6ef0dfb41"
+    },
+    {
+      "path": "docs\\assets\\showcase\\scenes\\car_butler2__7_02481.jpg",
+      "sha256": "bbf69722c2223503b71ce463734789ad0b1405e47b6da9dd81b43a20b54d3a42"
+    }
+  ],
+  "renderer": "portfolio-integrity-2026-10-15/render_previews.py"
+}

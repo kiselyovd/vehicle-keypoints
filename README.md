@@ -6,13 +6,19 @@ Detect 14 vehicle keypoints in road images, evaluate pose quality, and explore m
 
 YOLO26-pose is the main detector; ViTPose-S is an under-trained reference baseline. The project includes scene-level data preparation, evaluation, FastAPI serving, and published weights.
 
-[![Interactive viewer of source annotations and recorded predictions](docs/images/showcase.png)](https://kiselyovd.github.io/vehicle-keypoints/showcase/)
+[![Interactive viewer of source annotations and recorded predictions](docs/images/social-preview.png)](https://kiselyovd.github.io/vehicle-keypoints/showcase/)
 
 **[Explore the keypoints](https://kiselyovd.github.io/vehicle-keypoints/showcase/)** — explore six traffic scenes with 3–7 labelled vehicles each. See all vehicles together, switch between annotations and recorded checkpoint predictions, or zoom to one car. The curated examples have pinned source records and are separate from the test benchmark. [3D/PnP companion](docs/usage-guide.md#monocular-3d-pose-pnp-baseline).
 
 [Model & weights](https://huggingface.co/kiselyovd/vehicle-keypoints) · [Documentation](https://kiselyovd.github.io/vehicle-keypoints/) · [Русский README](README.ru.md)
 
 **[Run live inference](https://huggingface.co/spaces/kiselyovd/vehicle-keypoints-demo)** on your own image. The Space uses the published real-data checkpoint; the explorer above uses original annotations and recorded outputs.
+
+<!-- ARTIFACT-OVERVIEW:START -->
+OKS-mAP **50.38%** · OKS-mAP50 **70.36%**. [Evaluation and scope](https://github.com/kiselyovd/vehicle-keypoints/blob/main/reports/metrics.json).
+
+**Evidence:** Stored CarFusion evaluation; not re-executed as part of this audit. 12761 source test frames, OKS sigmas 0.05, PCK threshold 0.05 of bbox diagonal. Historical report is tracked; original training membership and immutable dataset revision were not recorded. Curated demo outputs are separate illustrations.
+<!-- ARTIFACT-OVERVIEW:END -->
 
 ## Try the detector
 

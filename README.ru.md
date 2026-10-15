@@ -1,144 +1,29 @@
-# vehicle-keypoints
+# Ключевые точки автомобилей
 
-[Интерактивная витрина проекта](https://kiselyovd.github.io/vehicle-keypoints/showcase/)
+Детекция автомобилей и 14 ключевых точек кузова на дорожных кадрах. Основная модель — YOLO26-pose; исследовательские дополнения — monocular 3D/PnP и перенос с синтетических данных.
 
-Production-уровневая оценка позы автомобиля по 14 ключевым точкам на CarFusion - YOLO26-pose (основная) + ViTPose-S (baseline).
+[CI](https://github.com/kiselyovd/vehicle-keypoints/actions/workflows/ci.yml) · [Документация](https://kiselyovd.github.io/vehicle-keypoints/) · [Модель](https://huggingface.co/kiselyovd/vehicle-keypoints) · [Лицензии компонентов](docs/LICENSES.md)
 
-[![CI](https://img.shields.io/github/actions/workflow/status/kiselyovd/vehicle-keypoints/ci.yml?branch=main&label=CI&style=for-the-badge&logo=github)](https://github.com/kiselyovd/vehicle-keypoints/actions/workflows/ci.yml)
-[![Docs](https://img.shields.io/badge/docs-mkdocs-526CFE?style=for-the-badge&logo=materialformkdocs&logoColor=white)](https://kiselyovd.github.io/vehicle-keypoints/)
-[![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/kiselyovd/vehicle-keypoints/badges/coverage.json&style=for-the-badge&logo=pytest&logoColor=white)](https://github.com/kiselyovd/vehicle-keypoints/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
-[![Python 3.12+](https://img.shields.io/badge/Python-3.12%20%7C%203.13-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![HF Model](https://img.shields.io/badge/🤗%20HF%20Hub-model-FFD21E?style=for-the-badge)](https://huggingface.co/kiselyovd/vehicle-keypoints)
+[![Реальные предсказания на двух дорожных сценах с несколькими автомобилями](docs/images/social-preview.png)](https://huggingface.co/spaces/kiselyovd/vehicle-keypoints-demo)
 
-Комплексный инструментарий для детекции автомобилей и регрессии **14 анатомических ключевых точек** (колёса, передние фары и задние фонари, углы крыши, выхлоп, центр кузова) на датасете CarFusion (CMU). Основная модель - одностадийный детектор **YOLO26-pose** (Ultralytics); baseline - top-down **ViTPose-S**, обёрнутый в PyTorch Lightning и получающий кропы от YOLO-детектора автомобилей. Стек настраивается через Hydra, обучается из CLI, оценивается по OKS-mAP + PCK@0.05, публикуется через FastAPI + Docker, документируется MkDocs Material и распространяется через Hugging Face Hub. Только для исследований и обучения - **не является основным сенсором для автономного вождения**.
+**[Запустить на своём кадре](https://huggingface.co/spaces/kiselyovd/vehicle-keypoints-demo)** · [Просмотрщик разметки и записанных предсказаний](https://kiselyovd.github.io/vehicle-keypoints/showcase/)
 
-📖 [English docs](https://kiselyovd.github.io/vehicle-keypoints/) • 🇬🇧 [English README](README.md) • 🤗 [HF Hub модель](https://huggingface.co/kiselyovd/vehicle-keypoints)
+Результаты берутся из [единого отчёта](reports/metrics.json): [актуальная таблица и границы оценки](README.md#current-artifact-and-evaluation). Это сохранённая оценка CarFusion; полный benchmark в этом аудите не перезапускался. Иллюстрации в просмотрщике не являются test-набором. Исходный состав training-выборки не зафиксирован.
 
-## Датасет
+## Попробовать
 
-[CarFusion](http://www.cs.cmu.edu/~mvo/index_files/CarFusion.html) - многокамерный датасет дорожных сцен от Carnegie Mellon University (Dinesh Reddy, Minh Vo, Srinivasa Narasimhan, CVPR 2018), содержащий **14 ключевых точек на каждом автомобиле**. Исходный релиз предварительно конвертируется в формат COCO-keypoints через `scripts/convert_carfusion_to_coco.py`, а `src/vehicle_keypoints/data/prepare.py` выполняет **разбиение 90/10 на уровне сцен** среди 8 обучающих сцен (val = `car_craig2`, остальные 7 - в train), так что ни одна сцена не попадает сразу в две выборки.
-
-Итоговое количество изображений: **16 713 train / 3 474 val / 12 761 test**. CarFusion принадлежит CMU и распространяется под собственной исследовательской лицензией.
-
-## Результаты
-
-Метрики на тестовой выборке CarFusion (12 761 изображение, 39 252 предсказания):
-
-| Модель | OKS-mAP | OKS-mAP50 | PCK@0.05 |
-|---|---|---|---|
-| **YOLO26-pose** (основная) | **22.0%** | **35.0%** | **49.6%** |
-| ViTPose-S (baseline) | 0.1% | 0.4% | 13.7% |
-
-OKS считается через pycocotools с равномерными `kpt_oks_sigmas=0.05` (для 14 нечеловеческих keypoints CarFusion не существует устоявшейся анатомической калибровки sigma); PCK@0.05 - с порогом от диагонали bbox. ViTPose-S baseline **честно недотренирован** (15 эпох, `val=train` в `scripts/finalize_v010.py`, для 85M параметров обычно требуется 100+ эпох) - оставлен как reference, но не репрезентативен для возможностей ViTPose. Полные числа - `reports/metrics_summary.json`.
-
-## Монокулярная 3D-поза (PnP) - baseline
-
-14 keypoints поднимаются до полной **6DoF-позы машины** через PnP (`cv2.solvePnPRansac`) относительно одного жёсткого метрического каркаса машины - первых 14 точек 24-точечной схемы [ue5-vehicle-synth](https://github.com/kiselyovd/ue5-vehicle-synth). Прогоняем CarFusion-детектор на реальной валидации [ApolloCar3D](http://apolloscape.auto/car_instance.html) (272 кадра) и сравниваем монокулярную PnP-позу с 3D ground-truth позами ApolloCar3D:
-
-| Метрика | Значение |
-|---|---|
-| Ошибка ротации, медиана | **13.6°** |
-| Ошибка ротации, среднее | 51.6° |
-| Ошибка трансляции, медиана | 3.13 м |
-| Машин в пределах 10° ротации | 37.8% |
-| Машин в пределах 2 м трансляции | 35.7% |
-| Совпавших машин / hit-rate детектора | 230 / 25.1% |
-
-![3D pose overlay](docs/images/pose3d_overlay.png)
-
-Честные оговорки: это **один усреднённый каркас седана** (реальные машины разнятся по размеру и форме - встроенный источник ошибки), а детектор обучен на **CarFusion** и оценивается на **ApolloCar3D** - реальный domain shift, отсюда hit-rate 25% (ApolloCar3D размечает ещё и все дальние и припаркованные машины). Выравнивание кадра model-to-Apollo - фиксированная ротация, откалиброванная усреднением вращений по SO(3) на совпавших машинах (медианная ошибка ротации 109° -> 16° на калибровочной подвыборке). Высокое среднее ротации - хвост flip-неоднозначностей PnP (перёд/зад). Этот жёсткий PnP-baseline - геометрический фундамент для следующего этапа: обучаемой shape-aware монокулярной 3D-модели. Воспроизвести: `uv run python scripts/eval_pose3d.py`; числа в `reports/pose3d_apollo.json`.
-
-3D ground truth - из датасета [ApolloScape 3D Car Instance](http://apolloscape.auto/car_instance.html) (бенчмарк ApolloCar3D, Song et al., CVPR 2019): 79 типов CAD-машин с 6DoF-позами на машину и интринсиками камеры `RIEGL-CS6`; лицензия research-only. Используем только его 3D-позы ground truth, не CAD-формы.
-
-## Синтетические данные: ue5-vehicle-synth
-
-24-точечная схема и синтетические тренировочные данные - из родственного проекта [`ue5-vehicle-synth`](https://github.com/kiselyovd/ue5-vehicle-synth), который генерирует кадры машин с разметкой keypoints внутри City Sample (Unreal Engine 5).
-
-![Демо ue5-vehicle-synth: машина едет, обретает 24-точечный скелет keypoints, затем едет дальше как wireframe-призрак](https://raw.githubusercontent.com/kiselyovd/ue5-vehicle-synth/main/docs/videos/demo-hero.gif)
-
-> Демо: в каждой сцене одна машина едет обычной, затем со своим 24-точечным скелетом keypoints, затем как wireframe-призрак. Полное видео и пайплайн - в [`ue5-vehicle-synth`](https://github.com/kiselyovd/ue5-vehicle-synth).
-
-## Быстрый старт
+Из корня репозитория, Python 3.13+ и uv:
 
 ```bash
 uv sync --all-groups
-bash scripts/sync_data.sh "D:/ProjectsData/Car Key Point/datasets/carfusion"
-uv run python -m vehicle_keypoints.data.prepare --raw data/raw --out data/processed
-make train     # main YOLO26-pose (~90 min RTX 3080)
-make evaluate  # OKS-mAP + PCK on test
-make serve     # FastAPI on :8000
+uv run python -c "from huggingface_hub import hf_hub_download; print(hf_hub_download('kiselyovd/vehicle-keypoints', 'weights.pt', revision='d277c2d8c9b5ee49d9fed85fe43bdd72b16a0f06', local_dir='artifacts/hf'))"
+uv run python -m vehicle_keypoints.inference.predict --checkpoint artifacts/hf/weights.pt --input data/sample/images/car_butler1__16_04881.jpg
 ```
 
-## Полные команды обучения
+Результат — JSON: bbox `(x, y, width, height)`, score и 14 точек `(x, y, score)` для каждой машины. Веса, checkpoint SHA256, preprocessing и происхождение метрик записаны в [artifact manifest](artifact-manifest.json).
 
-**Основная - YOLO26-pose:**
+## Исследования и документация
 
-```bash
-uv run python -m vehicle_keypoints.training.train +experiment=sota trainer.max_epochs=100
-```
+[Обучение, оценка и API](docs/usage-guide.md) · [Синтетическое предобучение](docs/phase0/synthetic-pretraining.md) · [Английский README](README.md) · [Цитирование](CITATION.cff)
 
-**Baseline - ViTPose-S (top-down, Lightning):**
-
-```bash
-uv run python -m vehicle_keypoints.training.train_vitpose model=baseline trainer.max_epochs=30
-```
-
-## Инференс
-
-```python
-from huggingface_hub import hf_hub_download
-from vehicle_keypoints.inference.predict import Detector
-
-ckpt = hf_hub_download(repo_id="kiselyovd/vehicle-keypoints", filename="weights.pt")
-det = Detector.from_checkpoint(ckpt)
-detections = det.predict("car.jpg")
-for d in detections:
-    print(d["bbox"], d["score"], len(d["keypoints"]))
-```
-
-Каждая детекция - словарь с рамкой `bbox` в формате xyxy, скором детектора `score` и списком из 14 точек `(x, y, visibility)`, соответствующих скелету CarFusion.
-
-## Сервинг
-
-```bash
-docker compose up api
-```
-
-JSON-ответ (ключевые точки + рамки):
-
-```bash
-curl -X POST -F file=@car.jpg http://localhost:8000/detect
-```
-
-Overlay-PNG (скелет, отрисованный поверх входного изображения):
-
-```bash
-curl -X POST -F file=@car.jpg "http://localhost:8000/detect?overlay=true" -o overlay.png
-```
-
-## Структура проекта
-
-```
-vehicle-keypoints/
-├── configs/              # Hydra
-├── data/                 # raw + processed + sample (CI)
-├── docs/                 # MkDocs Material
-├── scripts/              # convert_carfusion_to_coco.py, build_sample_data.py, publish_to_hf.py, ...
-├── src/vehicle_keypoints/
-│   ├── data/             # prepare.py, coco_dataset.py, datamodule.py
-│   ├── models/           # factory.py, vitpose.py, lightning_module.py
-│   ├── training/         # train.py (YOLO), train_vitpose.py (Lightning)
-│   ├── evaluation/       # evaluate.py (OKS-mAP + PCK)
-│   ├── inference/        # predict.py, overlay.py
-│   └── serving/          # FastAPI /detect
-└── tests/
-```
-
-## Назначение
-
-Только для исследований и обучения в области компьютерного зрения. CarFusion - небольшой односценарный датасет, не отражающий всего разнообразия дорожных условий. **Не подходит в качестве основного сенсора для автономного вождения; не имеет сертификации по безопасности.**
-
-## Лицензия
-
-MIT - см. [LICENSE](LICENSE). Веса модели на HF Hub распространяются на тех же условиях; датасет CarFusion принадлежит CMU и подчиняется собственной исследовательской лицензии.
+Исследовательский проект. Перекрытия, обрезанные машины и необычные ракурсы приводят к пропускам и ошибкам. Код MIT; CarFusion, ApolloCar3D, Ultralytics и опубликованные веса имеют отдельные условия. Демо не является самостоятельным сенсором автономного вождения.
