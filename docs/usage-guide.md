@@ -15,7 +15,7 @@ Test-set metrics on CarFusion test split (12 761 images, 42 706 predictions):
 | Model | OKS-mAP | OKS-mAP50 | PCK@0.05 |
 |---|---|---|---|
 | **YOLO26-pose** (main) | **50.4%** | **70.4%** | **76.1%** |
-| ViTPose-S (baseline) | 0.1% | 0.4% | 13.7% |
+| ViTPose-S (reference run) | 0.1% | 0.4% | 13.7% |
 
 OKS computed via pycocotools with uniform `kpt_oks_sigmas=0.05` (CarFusion has no established anatomical sigma calibration for 14 non-human keypoints); PCK@0.05 with a bbox-diagonal threshold. ViTPose-S baseline is **honestly under-trained** (15 epochs, `val=train` in `scripts/finalize_v010.py`, 85M params typically need 100+ epochs) - kept as a reference point but not representative of ViTPose capacity. See `reports/metrics_summary.json` for the full numbers.
 
@@ -75,7 +75,7 @@ make serve     # FastAPI on :8000
 uv run python -m vehicle_keypoints.training.train +experiment=sota trainer.max_epochs=100
 ```
 
-**Baseline - ViTPose-S (top-down, Lightning):**
+**Reference run - ViTPose-S (top-down, Lightning):**
 
 ```bash
 uv run python -m vehicle_keypoints.training.train_vitpose model=baseline trainer.max_epochs=30

@@ -1,24 +1,59 @@
 {
+  "schema_version": 2,
   "asset": "docs/images/social-preview.png",
-  "sha256": "8a3e64f1946edd513df6c6193fd34f94cd14e1ad8f982f00b89e26764d3eaadc",
   "width": 1280,
   "height": 640,
-  "bytes": 734617,
-  "kind": "project evidence composition; no generated model output",
-  "note": "Curated illustrations; source CarFusion frames and recorded predictions, not a benchmark",
-  "sources": [
+  "kind": "identity preview composed from a reviewed actual project figure",
+  "source": {
+    "repository": "kiselyovd/vehicle-keypoints",
+    "revision": "2b8dfdc8640376acc3fdf68144288ac351270059",
+    "path": "docs/images/social-preview.png",
+    "sha256": "8a3e64f1946edd513df6c6193fd34f94cd14e1ad8f982f00b89e26764d3eaadc"
+  },
+  "source_figure_provenance": {
+    "asset": "docs/images/social-preview.png",
+    "sha256": "8a3e64f1946edd513df6c6193fd34f94cd14e1ad8f982f00b89e26764d3eaadc",
+    "width": 1280,
+    "height": 640,
+    "bytes": 734617,
+    "kind": "project evidence composition; no generated model output",
+    "note": "Curated illustrations; source CarFusion frames and recorded predictions, not a benchmark",
+    "sources": [
+      {
+        "path": "docs\\assets\\showcase\\data.json",
+        "sha256": "55a13fbc15ddce45eeda2a5f2def2f6fc3d2624e26cfd3b5559a23a30b088cdb"
+      },
+      {
+        "path": "docs\\assets\\showcase\\scenes\\car_butler1__16_00721.jpg",
+        "sha256": "00a3724e5225a664221b4fa23219d3441ae9f9cdf46977365f4c81d6ef0dfb41"
+      },
+      {
+        "path": "docs\\assets\\showcase\\scenes\\car_butler2__7_02481.jpg",
+        "sha256": "bbf69722c2223503b71ce463734789ad0b1405e47b6da9dd81b43a20b54d3a42"
+      }
+    ],
+    "renderer": "portfolio-integrity-2026-10-15/render_previews.py"
+  },
+  "renderer": {
+    "repository": "kiselyovd/kiselyovd.github.io",
+    "revision": "7efec9a44382677b58cb657843446da104d8bf57",
+    "path": "automation/render_social_previews.py",
+    "sha256": "381021e708028e2bf42f0f97ab32d66df71747fdfced5fda3922bc06f805488b"
+  },
+  "outputs": [
     {
-      "path": "docs\\assets\\showcase\\data.json",
-      "sha256": "55a13fbc15ddce45eeda2a5f2def2f6fc3d2624e26cfd3b5559a23a30b088cdb"
+      "project": "vehicle-keypoints",
+      "theme": "dark",
+      "path": "docs/images/social-preview.png",
+      "sha256": "83d6c70f35c6dbd0762d95477d9d7faa2c0d045eb04e29bf9ddc62c9bdfb9e33",
+      "bytes": 335968
     },
     {
-      "path": "docs\\assets\\showcase\\scenes\\car_butler1__16_00721.jpg",
-      "sha256": "00a3724e5225a664221b4fa23219d3441ae9f9cdf46977365f4c81d6ef0dfb41"
-    },
-    {
-      "path": "docs\\assets\\showcase\\scenes\\car_butler2__7_02481.jpg",
-      "sha256": "bbf69722c2223503b71ce463734789ad0b1405e47b6da9dd81b43a20b54d3a42"
+      "project": "vehicle-keypoints",
+      "theme": "light",
+      "path": "docs/images/social-preview-light.png",
+      "sha256": "1d0df6b0cf256bdd7b31c2ec960ed3f4c01980a1bf5728bbdfa60aefd1ea94fe",
+      "bytes": 337684
     }
-  ],
-  "renderer": "portfolio-integrity-2026-10-15/render_previews.py"
+  ]
 }

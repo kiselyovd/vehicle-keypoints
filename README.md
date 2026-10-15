@@ -6,7 +6,7 @@ Detect 14 vehicle keypoints in road images, evaluate pose quality, and explore m
 
 YOLO26-pose is the main detector; ViTPose-S is an under-trained reference baseline. The project includes scene-level data preparation, evaluation, FastAPI serving, and published weights.
 
-[![Interactive viewer of source annotations and recorded predictions](docs/images/social-preview.png)](https://kiselyovd.github.io/vehicle-keypoints/showcase/)
+[![Interactive viewer of source annotations and recorded predictions](docs/images/result-example.png)](https://kiselyovd.github.io/vehicle-keypoints/showcase/)
 
 **[Explore the keypoints](https://kiselyovd.github.io/vehicle-keypoints/showcase/)** — explore six traffic scenes with 3–7 labelled vehicles each. See all vehicles together, switch between annotations and recorded checkpoint predictions, or zoom to one car. The curated examples have pinned source records and are separate from the test benchmark. [3D/PnP companion](docs/usage-guide.md#monocular-3d-pose-pnp-baseline).
 
