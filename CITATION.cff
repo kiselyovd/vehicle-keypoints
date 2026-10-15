@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "Cite this implementation and the original CarFusion publication separately."
+title: "Vehicle Keypoints"
+type: software
+authors:
+  - family-names: Kiselyov
+    given-names: Daniil
+repository-code: "https://github.com/kiselyovd/vehicle-keypoints"
+license: MIT

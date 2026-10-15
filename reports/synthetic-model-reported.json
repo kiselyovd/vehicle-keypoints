@@ -1,0 +1,14 @@
+{
+  "status": "reported",
+  "source": "https://huggingface.co/kiselyovd/citysample-vehicle-keypoints-24pt/raw/bb0971f76e0944a3dd90faa236cbff37547b5590/README.md",
+  "source_sha256": "21d2eb5982d401b95cdbbf5b8200d978e391355ab5f387bc822bf0d2517bac57",
+  "metrics": {
+    "box_map50": 0.84,
+    "pose_map50": 0.602,
+    "box_map50_95": 0.629,
+    "pose_map50_95": 0.39
+  },
+  "training_membership_verified": true,
+  "evaluation_fold": "original 251-frame checkpoint validation fold",
+  "scope": "Imported historical training-run validation values, not a new replay. Current Hub test includes 234 checkpoint training frames and is not independent."
+}

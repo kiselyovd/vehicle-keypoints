@@ -1,0 +1,86 @@
+{
+  "dataset": "kiselyovd/citysample-vehicle-keypoints-24pt",
+  "revision": "bf2e175ddfb0b2dcd8dee3264f38eec3c19e643b",
+  "rows": 2510,
+  "annotations_compared": 14286,
+  "float32_tolerance": 0.0005,
+  "image_bytes_compared": false,
+  "column_projection_excluded_image": true,
+  "crosswalk_sha256": "840a9f538f95eed38889e2cdd4ab5ac97928d183a469bd57175ec980b92fcd0c",
+  "cross_tab": {
+    "train": {
+      "val": 204,
+      "train": 1792
+    },
+    "validation": {
+      "val": 24,
+      "train": 233
+    },
+    "test": {
+      "train": 234,
+      "val": 23
+    }
+  },
+  "shards": [
+    {
+      "path": "data/test-00000-of-00001.parquet",
+      "lfs_sha256": "f692a8f92d2a806d3b6861d0463bc5dab8cb6e11683d9684344d7b6659b38b0a",
+      "rows": 257,
+      "http_bytes_read": 555894
+    },
+    {
+      "path": "data/train-00000-of-00008.parquet",
+      "lfs_sha256": "654fd05bc96f4fa0858d6dfc4951dbabc0a720e69e070cee7bcdf8d20abd08a3",
+      "rows": 250,
+      "http_bytes_read": 617712
+    },
+    {
+      "path": "data/train-00001-of-00008.parquet",
+      "lfs_sha256": "c69fbc2497fab50b88b100b20a3c76a4dd45ebe9135d6b54c6b253cf5500734d",
+      "rows": 250,
+      "http_bytes_read": 609254
+    },
+    {
+      "path": "data/train-00002-of-00008.parquet",
+      "lfs_sha256": "8b92b858658ea4a5b499ef2b80f73755e5fc8c8ea1b3a006d83c4ba729b09217",
+      "rows": 250,
+      "http_bytes_read": 561221
+    },
+    {
+      "path": "data/train-00003-of-00008.parquet",
+      "lfs_sha256": "04af30f52c4f4e1ad5aca3bd0b6ac9cf11cdc1cf7765cdfe9a7b3b1662c517c2",
+      "rows": 250,
+      "http_bytes_read": 544797
+    },
+    {
+      "path": "data/train-00004-of-00008.parquet",
+      "lfs_sha256": "051a28b41739cbb08ff3f4460ef12c35b9568f568a68fdd08688bc09cb4064c7",
+      "rows": 249,
+      "http_bytes_read": 526902
+    },
+    {
+      "path": "data/train-00005-of-00008.parquet",
+      "lfs_sha256": "de092924eca8af9dffc34fd0f904f2e6d6c9e7bc40ec8ef5e1c06e326928f0dc",
+      "rows": 249,
+      "http_bytes_read": 422223
+    },
+    {
+      "path": "data/train-00006-of-00008.parquet",
+      "lfs_sha256": "f762bf4cae67d78a2d82eb745882ed417d233ba9c243df59a1baa02deb0a0eb3",
+      "rows": 249,
+      "http_bytes_read": 445463
+    },
+    {
+      "path": "data/train-00007-of-00008.parquet",
+      "lfs_sha256": "e0210dec1c7601ce52f999a8de56a25375536cae65d3b99a248031d4fb57de68",
+      "rows": 249,
+      "http_bytes_read": 444129
+    },
+    {
+      "path": "data/validation-00000-of-00001.parquet",
+      "lfs_sha256": "cbaff41609cd41856306760e163bcb4356b23865c2149dd3f46d69022e944cca",
+      "rows": 257,
+      "http_bytes_read": 540265
+    }
+  ]
+}

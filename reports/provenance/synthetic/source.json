@@ -1,0 +1,17 @@
+{
+  "source_coco_sha256": "2c6080ad20021b0e3ccfe47b76b10f74fa66c16797785e2bcfbb3dcf0cc31302",
+  "source_images": 2510,
+  "source_annotations": 14286,
+  "model_repo": "kiselyovd/citysample-vehicle-keypoints-24pt",
+  "model_revision": "bb0971f76e0944a3dd90faa236cbff37547b5590",
+  "weights_sha256": "16d9793c283a39e262f3a119c03cac0006b86fa5732162d9e880cd4ed54f8379",
+  "train_basenames_sha256": "2b0b65e3bf108ef2408d71047469c0f7e5432a4cfa9efa964bbce56e225d141a",
+  "validation_basenames_sha256": "404ab86d796622996a97af0d99ec388a56b274caf325c5bc7cc74ba199db9560",
+  "basename_serialization": "sorted basenames joined with LF, final LF, UTF-8",
+  "training_script_sha256": "a41bce945b97556625c22defbabb30e740d2d1a96cafb3753b68d020a51e3462",
+  "publisher_script_sha256": "d529934cf4be2c7f7803310faa52857b23b2dff458ac725ae91e1f989b813be4",
+  "membership_status": "verified_actual_pinned_parquet_columns",
+  "image_byte_equality_verified": false,
+  "training_image_lists_verified": true,
+  "scope": "2510 ID/path/dimension records and 14286 bbox/keypoint annotations compared with source COCO. Projection excludes embedded images; float32 absolute tolerance 0.0005. Actual training basename lists matched before generating this crosswalk."
+}

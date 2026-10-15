@@ -22,7 +22,7 @@ Download the weights, then run inference:
 
 ```bash
 uv sync --all-groups
-uv run python -c "from huggingface_hub import hf_hub_download; print(hf_hub_download('kiselyovd/vehicle-keypoints', 'weights.pt', local_dir='artifacts/hf'))"
+uv run python -c "from huggingface_hub import hf_hub_download; print(hf_hub_download('kiselyovd/vehicle-keypoints', 'weights.pt', revision='d277c2d8c9b5ee49d9fed85fe43bdd72b16a0f06', local_dir='artifacts/hf'))"
 uv run python -m vehicle_keypoints.inference.predict \
   --checkpoint artifacts/hf/weights.pt --input data/sample/images/car_butler1__16_04881.jpg
 ```
@@ -31,12 +31,21 @@ This runs inference on a bundled CarFusion sample. Output is JSON with boxes, co
 
 ## Results and research
 
-Reported **2D** metrics on the CarFusion test split: **12,761 images**, OKS sigmas `0.05`, PCK threshold `0.05` of the box diagonal.
+<!-- ARTIFACT-MANIFEST:START -->
+### Current artifact and evaluation
 
-| Model | OKS-mAP | OKS-mAP50 | PCK@0.05 |
-|---|---|---|---|
-| YOLO26-pose | 50.4% | 70.4% | 76.1% |
-| ViTPose-S reference | 0.1% | 0.4% | 13.7% |
+**Stored CarFusion evaluation; not re-executed as part of this audit**
+
+| Metric | Value |
+|---|---:|
+| OKS-mAP | 50.38% |
+| OKS-mAP50 | 70.36% |
+| PCK@0.05 | 76.06% |
+
+12761 source test frames, OKS sigmas 0.05, PCK threshold 0.05 of bbox diagonal. Historical report is tracked; original training membership and immutable dataset revision were not recorded. Curated demo outputs are separate illustrations.
+
+[Evaluation record](https://github.com/kiselyovd/vehicle-keypoints/blob/main/reports/metrics.json) · [Pinned model](https://huggingface.co/kiselyovd/vehicle-keypoints/tree/d277c2d8c9b5ee49d9fed85fe43bdd72b16a0f06)
+<!-- ARTIFACT-MANIFEST:END -->
 
 See [stored metrics](reports/metrics_summary.json) and the [evaluation notes](docs/usage-guide.md#results). The ViTPose run used 15 epochs and `val=train`; these numbers do not establish a fair comparison of architecture capacity.
 

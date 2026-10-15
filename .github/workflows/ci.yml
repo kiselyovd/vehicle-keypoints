@@ -11,27 +11,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - name: Validate pinned model reports and generated summary
+        run: |
+          python scripts/artifact_manifest.py --check
+          python scripts/artifact_manifest.py --manifest manifests/synthetic-model.json
       - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
       - name: Set up Python
         run: uv python install
       - name: Install deps
-        run: uv sync --all-groups
+        run: uv sync --frozen --all-groups
       - name: Ruff check
-        run: uv run ruff check .
+        run: uv run --frozen ruff check .
       - name: Ruff format
-        run: uv run ruff format --check .
+        run: uv run --frozen ruff format --check .
       - name: Mypy
-        run: uv run mypy src scripts
+        run: uv run --frozen mypy src scripts
       - name: Deptry
-        run: uv run deptry .
+        run: uv run --frozen deptry .
       - name: Bandit
-        run: uv run bandit -r src scripts -c pyproject.toml
+        run: uv run --frozen bandit -r src scripts -c pyproject.toml
       - name: Interrogate
-        run: uv run interrogate -c pyproject.toml src scripts
+        run: uv run --frozen interrogate -c pyproject.toml src scripts
       - name: Pytest
-        run: uv run pytest
+        run: uv run --frozen pytest
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v7
         with:

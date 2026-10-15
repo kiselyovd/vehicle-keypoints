@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - name: Validate pinned model reports and generated summary
+        run: |
+          python scripts/artifact_manifest.py --check
+          python scripts/artifact_manifest.py --manifest manifests/synthetic-model.json
       - uses: astral-sh/setup-uv@v7
       - run: uv sync --group docs
       - uses: actions/setup-node@v6

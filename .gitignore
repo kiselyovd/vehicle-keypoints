@@ -25,4 +25,7 @@ data/processed/*
 site/
 
 # Local inference reports
-reports/
+reports/*
+!reports/metrics.json
+!reports/synthetic-model-reported.json
+!reports/provenance/

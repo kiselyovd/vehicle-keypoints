@@ -47,6 +47,10 @@ With the flip fix in place, the matched two-arm ablation was re-run fresh from *
 
 **Synthetic contribution: -1.7 pp OKS-mAP from the weak start, -9.5 pp from the strong one.** The supplement never helps, and it hurts more the stronger the baseline: a weak detector has accuracy to gain from any extra supervision, while a strong one only stands to lose from a large out-of-domain admixture. Capture difficulty matters too - on an earlier, easier capture the strong-baseline penalty was only -2.4 pp; the released capture is deliberately biased toward hard, occluded poses and triples it. The kill switch (**+2 pp or reconsider**) is decisively failed.
 
+## Published synthetic split provenance
+
+The released checkpoint used 2,259 training / 251 validation frames. The current Hub test contains **234 training frames out of 257** for that checkpoint, as verified against actual pinned Parquet rows and original training lists. It is unsuitable as an independent test for these weights. [Exact crosswalk and protocol](../DATASET_LINEAGE.md). The synthetic validation scores below refer to the original model validation fold, not Hub test.
+
 ## Why the raw number is not the whole story
 
 CarFusion is a **noisy yardstick**. Its ground truth is multi-view-triangulated and, even on its best-labelled cars, sparse and visibly scattered. Our synthetic labels are **pixel-exact by construction** (projected from the 3D mesh). But the noisy yardstick does NOT explain the penalty: recomputing the strong-baseline PCK penalty over only the 12 visually anchored points (dropping the unlabelable exhaust and center) leaves it unchanged at -10.6 pp, and per-keypoint the penalty is *mildest* exactly on those ill-defined points. The penalty is broad across well-anchored points - the signature of a domain shift, not label noise.

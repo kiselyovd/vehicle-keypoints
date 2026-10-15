@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "project": "vehicle-keypoints",
+  "hub": {
+    "repo_id": "kiselyovd/vehicle-keypoints",
+    "repo_type": "model",
+    "revision": "d277c2d8c9b5ee49d9fed85fe43bdd72b16a0f06",
+    "files": [
+      {
+        "path": "weights.pt",
+        "role": "weights",
+        "sha256": "6fab133b352391b24209204c55733558a3c18ef36be591ecf32d0a7ca3c27235"
+      }
+    ]
+  },
+  "input": {
+    "type": "RGB road image",
+    "image_size": 640,
+    "box_confidence_default": 0.25,
+    "implementation": "Ultralytics predict (letterbox, RGB tensor, /255)"
+  },
+  "output": {
+    "keypoints": 14,
+    "bbox": "xywh in CLI, xyxy in viewer JSON",
+    "scores": "detector/keypoint confidence, distinct from annotation visibility codes"
+  },
+  "dataset": {
+    "source": "https://www.cs.cmu.edu/~ILIM/projects/IM/CarFusion/cvpr2018/index.html",
+    "test_images_reported": 12761,
+    "training_membership_verified": false,
+    "revision_recorded": false
+  },
+  "evaluation": {
+    "status": "reported",
+    "label": "Stored CarFusion evaluation; not re-executed as part of this audit",
+    "scope": "12761 source test frames, OKS sigmas 0.05, PCK threshold 0.05 of bbox diagonal. Historical report is tracked; original training membership and immutable dataset revision were not recorded. Curated demo outputs are separate illustrations.",
+    "training_membership_verified": false,
+    "report": "reports/metrics.json",
+    "report_sha256": "71efbee0f57b4e6061bf8804572f5b7bff1900bd46f58b29ddac50c3112eff59",
+    "metrics": [
+      {
+        "name": "OKS-mAP",
+        "pointer": "/oks_map"
+      },
+      {
+        "name": "OKS-mAP50",
+        "pointer": "/oks_map_50"
+      },
+      {
+        "name": "PCK@0.05",
+        "pointer": "/pck_0.05"
+      }
+    ]
+  },
+  "licenses": {
+    "code": {
+      "id": "MIT",
+      "path": "LICENSE"
+    },
+    "dataset": {
+      "id": "source-specific",
+      "source": "https://www.cs.cmu.edu/~ILIM/projects/IM/CarFusion/cvpr2018/index.html"
+    },
+    "weights": {
+      "author_declaration": "MIT",
+      "upstream": "Ultralytics YOLO26-pose",
+      "upstream_terms": "AGPL-3.0 or applicable commercial license",
+      "source": "https://docs.ultralytics.com/help/FAQ/",
+      "scope": "Author declaration does not remove upstream obligations."
+    }
+  },
+  "demo": {
+    "url": "https://huggingface.co/spaces/kiselyovd/vehicle-keypoints-demo",
+    "model_revision": "d277c2d8c9b5ee49d9fed85fe43bdd72b16a0f06"
+  }
+}

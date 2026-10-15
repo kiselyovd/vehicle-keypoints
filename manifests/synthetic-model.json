@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "project": "vehicle-keypoints",
+  "hub": {
+    "repo_id": "kiselyovd/citysample-vehicle-keypoints-24pt",
+    "repo_type": "model",
+    "revision": "bb0971f76e0944a3dd90faa236cbff37547b5590",
+    "files": [
+      {
+        "path": "best.pt",
+        "role": "weights",
+        "sha256": "16d9793c283a39e262f3a119c03cac0006b86fa5732162d9e880cd4ed54f8379"
+      }
+    ]
+  },
+  "input": {
+    "type": "RGB image",
+    "image_size": 480,
+    "implementation": "Ultralytics letterbox, /255"
+  },
+  "output": {
+    "keypoints": 24,
+    "scores": "uncalibrated detector/keypoint scores"
+  },
+  "dataset": {
+    "repo_id": "kiselyovd/citysample-vehicle-keypoints-24pt",
+    "revision": "bf2e175ddfb0b2dcd8dee3264f38eec3c19e643b",
+    "model_splits": {
+      "train": 2259,
+      "validation": 251
+    },
+    "published_splits": {
+      "train": 1996,
+      "validation": 257,
+      "test": 257
+    },
+    "crosswalk": "reports/provenance/synthetic/crosswalk.jsonl",
+    "crosswalk_sha256": "840a9f538f95eed38889e2cdd4ab5ac97928d183a469bd57175ec980b92fcd0c",
+    "published_test_training_frames": 234
+  },
+  "evaluation": {
+    "status": "reported",
+    "label": "Recorded synthetic training-run validation; 251 frames",
+    "scope": "Imported historical training-run validation values, not a new replay. Current Hub test includes 234 checkpoint training frames and is not independent.",
+    "training_membership_verified": true,
+    "report": "reports/synthetic-model-reported.json",
+    "report_sha256": "79f645ea932991d2e1bdfc8d4a80ab571b66e17f720e8f8b76689b2776a09d80",
+    "metrics": [
+      {
+        "name": "Box mAP50",
+        "pointer": "/metrics/box_map50"
+      },
+      {
+        "name": "Pose mAP50",
+        "pointer": "/metrics/pose_map50"
+      },
+      {
+        "name": "Box mAP50-95",
+        "pointer": "/metrics/box_map50_95"
+      },
+      {
+        "name": "Pose mAP50-95",
+        "pointer": "/metrics/pose_map50_95"
+      }
+    ]
+  },
+  "licenses": {
+    "code": {
+      "id": "MIT",
+      "path": "LICENSE"
+    },
+    "dataset": {
+      "author_declaration": "MIT",
+      "upstream": "Epic City Sample; separate content terms"
+    },
+    "weights": {
+      "author_prior_declaration": "MIT",
+      "upstream_terms": "Ultralytics AGPL-3.0 or applicable Enterprise license",
+      "source": "https://www.ultralytics.com/license"
+    }
+  }
+}

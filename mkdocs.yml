@@ -64,6 +64,8 @@ nav:
   - Training: training.md
   - Serving: serving.md
   - Synthetic pre-training: phase0/synthetic-pretraining.md
+  - Dataset lineage: DATASET_LINEAGE.md
+  - Component terms: LICENSES.md
   - API reference: api.md
 
 extra_css:
