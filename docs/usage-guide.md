@@ -87,7 +87,10 @@ uv run python -m vehicle_keypoints.training.train_vitpose model=baseline trainer
 from huggingface_hub import hf_hub_download
 from vehicle_keypoints.inference.predict import Detector
 
-ckpt = hf_hub_download(repo_id="kiselyovd/vehicle-keypoints", filename="weights.pt")
+ckpt = hf_hub_download(
+    repo_id="kiselyovd/vehicle-keypoints", filename="weights.pt",
+    revision="d277c2d8c9b5ee49d9fed85fe43bdd72b16a0f06",
+)
 det = Detector.from_checkpoint(ckpt)
 detections = det.predict("car.jpg")
 for d in detections:
